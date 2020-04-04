@@ -1,50 +1,91 @@
 "use strict";
 
 document.addEventListener(`DOMContentLoaded`, () => {
-  renderComponent(`#profile`, getProfile());
-  renderComponent(`#main-navigation`, getMenu());
-  renderComponent(`#sort`, getSort());
+  renderComponent(`#header`, createProfileTemplate(), `beforeEnd`);
+  renderComponent(`#main`, createMenuTemplate(), `beforeEnd`);
+  renderComponent(`#main`, createSortTemplate(), `beforeEnd`);
+  renderComponent(`#main`, createFilmsContainerTemplate(), `beforeEnd`);
 
   for (let i = 0; i < 5; i++) {
-    renderComponent(`#all-films`, getFilmCard());
+    renderComponent(`#all-films`, createFilmCardTemplate(), `beforeEnd`);
   }
 
-  renderComponent(`#films-list`, getShowMoreButton());
+  renderComponent(`#films-list`, createShowMoreButtonTemplate(), `beforeEnd`);
 
   for (let i = 0; i < 2; i++) {
-    renderComponent(`#top-rated-films`, getFilmCard());
+    renderComponent(`#top-rated-films`, createFilmCardTemplate(), `beforeEnd`);
   }
 
   for (let i = 0; i < 2; i++) {
-    renderComponent(`#most-commented-films`, getFilmCard());
+    renderComponent(`#most-commented-films`, createFilmCardTemplate(), `beforeEnd`);
   }
 
-  renderComponent(`#footer-statistics`, getFooterStatistics());
-  renderComponent(`#film-details`, getFullFilmDetails());
+  renderComponent(`.footer__statistics`, createFooterStatisticsTemplate(), `beforeEnd`);
+  renderComponent(`body`, createFullFilmDetailsTemplate(), `beforeEnd`);
+
+  const filmDetails = document.querySelector(`.film-details`);
+
+  if (filmDetails) {
+    filmDetails.style = 'display: none';
+  }
 });
 
-const getProfile = () => {
-  return `<p class="profile__rating">Movie Buff</p>
-    <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">`;
+const createProfileTemplate = () => {
+  return `<section class="header__profile profile">
+    <p class="profile__rating">Movie Buff</p>
+    <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
+  </section>`;
 };
 
-const getMenu = () => {
-  return `<div class="main-navigation__items">
+const createMenuTemplate = () => {
+  return `<nav class="main-navigation">
+    <div class="main-navigation__items">
       <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
       <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">13</span></a>
       <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">4</span></a>
       <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">8</span></a>
     </div>
-    <a href="#stats" class="main-navigation__additional">Stats</a>`;
+    <a href="#stats" class="main-navigation__additional">Stats</a>
+  </nav>`;
 };
 
-const getSort = () => {
-  return `<li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
+const createSortTemplate = () => {
+  return `<ul class="sort">
+    <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
     <li><a href="#" class="sort__button">Sort by date</a></li>
-    <li><a href="#" class="sort__button">Sort by rating</a></li>`;
+    <li><a href="#" class="sort__button">Sort by rating</a></li>
+  </ul>`;
 };
 
-const getFilmCard = () => {
+const createFilmsContainerTemplate = () => {
+  return `<section class="films">
+    <section id="films-list" class="films-list">
+      <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
+
+      <div id="all-films" class="films-list__container">
+
+      </div>
+    </section>
+
+    <section class="films-list--extra">
+      <h2 class="films-list__title">Top rated</h2>
+
+      <div id="top-rated-films" class="films-list__container">
+
+      </div>
+    </section>
+
+    <section class="films-list--extra">
+      <h2 class="films-list__title">Most commented</h2>
+
+      <div id="most-commented-films" class="films-list__container">
+
+      </div>
+    </section>
+  </section>`;
+};
+
+const createFilmCardTemplate = () => {
   return `<article class="film-card">
           <h3 class="film-card__title">The Dance of Life</h3>
           <p class="film-card__rating">8.3</p>
@@ -64,16 +105,17 @@ const getFilmCard = () => {
         </article>`;
 };
 
-const getShowMoreButton = () => {
+const createShowMoreButtonTemplate = () => {
   return `<button class="films-list__show-more">Show more</button>`;
 };
 
-const getFooterStatistics = () => {
+const createFooterStatisticsTemplate = () => {
   return `<p>130 291 movies inside</p>`;
 };
 
-const getFullFilmDetails = () => {
-  return `<form class="film-details__inner" action="" method="get">
+const createFullFilmDetailsTemplate = () => {
+  return `<section class="film-details">
+  <form class="film-details__inner" action="" method="get">
     <div class="form-details__top-container">
       <div class="film-details__close">
         <button class="film-details__close-btn" type="button">close</button>
@@ -98,7 +140,7 @@ const getFullFilmDetails = () => {
           </div>
 
           <table class="film-details__table">
-            <tbody><tr class="film-details__row">
+            <tr class="film-details__row">
               <td class="film-details__term">Director</td>
               <td class="film-details__cell">Anthony Mann</td>
             </tr>
@@ -129,7 +171,7 @@ const getFullFilmDetails = () => {
                 <span class="film-details__genre">Film-Noir</span>
                 <span class="film-details__genre">Mystery</span></td>
             </tr>
-          </tbody></table>
+          </table>
 
           <p class="film-details__film-description">
             The film opens following a murder at a cabaret in Mexico City in 1936, and then presents the events leading up to it in flashback. The Great Flamarion (Erich von Stroheim) is an arrogant, friendless, and misogynous marksman who displays his trick gunshot act in the vaudeville circuit. His show features a beautiful assistant, Connie (Mary Beth Hughes) and her drunken husband Al (Dan Duryea), Flamarion's other assistant. Flamarion falls in love with Connie, the movie's femme fatale, and is soon manipulated by her into killing her no good husband during one of their acts.
@@ -239,10 +281,14 @@ const getFullFilmDetails = () => {
         </div>
       </section>
     </div>
-  </form>`;
+  </form>
+</section>`;
 };
 
-const renderComponent = (container, html) => {
-  const block = document.querySelector(container);
-  block.insertAdjacentHTML(`beforeEnd`, html);
+const renderComponent = (selector, html, place) => {
+  const container = document.querySelector(selector);
+
+  if (container) {
+    container.insertAdjacentHTML(place, html);
+  }
 };
