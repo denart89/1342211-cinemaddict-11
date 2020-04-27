@@ -1,3 +1,5 @@
+import {createElement} from "../utils";
+
 const createFilterItem = (name, count, hash, isActive) => {
   return (
     `<a href="#${hash}" class="main-navigation__item${isActive ? ` main-navigation__item--active` : ``}">${name} ${count ? `<span class="main-navigation__item-count">${count}</span>` : ``}</a>`
@@ -15,4 +17,27 @@ const createFilterTemplate = (filter) => {
   </nav>`;
 };
 
-export {createFilterTemplate};
+class Filter {
+  constructor(filter) {
+    this._filter = filter;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterTemplate(this._filter);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export {Filter};

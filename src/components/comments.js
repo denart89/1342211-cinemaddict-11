@@ -1,4 +1,5 @@
 import {getCommentsCount} from "../data/comments";
+import {createElement} from "../utils";
 
 const createCommentsItem = (text, emoji, date, author) => {
   return `<li class="film-details__comment">
@@ -19,7 +20,8 @@ const createCommentsItem = (text, emoji, date, author) => {
 const createCommentsTemplate = (comments) => {
   const commentsList = comments.map((it) => createCommentsItem(it.text, it.emoji, it.date, it.author)).join(`\n`);
 
-  return `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${getCommentsCount()}</span></h3>
+  return `<section class="film-details__comments-wrap">
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${getCommentsCount()}</span></h3>
 
         <ul class="film-details__comments-list">
             ${commentsList}
@@ -53,7 +55,32 @@ const createCommentsTemplate = (comments) => {
               <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
             </label>
           </div>
-        </div>`;
+        </div>
+    </section>
+    `;
 };
 
-export {createCommentsTemplate};
+class Comments {
+  constructor(comments) {
+    this._comments = comments;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createCommentsTemplate(this._comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export {Comments};
