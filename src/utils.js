@@ -8,8 +8,41 @@ const getRandomArrayItem = (array) => {
   return array[randomIndex];
 };
 
-const renderComponent = (container, html, place) => {
-  container.insertAdjacentHTML(place, html);
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
 };
 
-export {getRandomIntegerNumber, getRandomArrayItem, renderComponent};
+const renderPosition = {
+  APPEND: `append`,
+  PREPEND: `prepend`,
+  BEFORE: `before`,
+  AFTER: `after`
+};
+
+const render = (container, element, place) => {
+  switch (place) {
+    case renderPosition.BEFORE:
+      container.before(element);
+      break;
+    case renderPosition.AFTER:
+      container.after(element);
+      break;
+    case renderPosition.APPEND:
+      container.append(element);
+      break;
+    case renderPosition.PREPEND:
+      container.prepend(element);
+      break;
+  }
+};
+
+export {
+  getRandomIntegerNumber,
+  getRandomArrayItem,
+  createElement,
+  renderPosition,
+  render,
+};
