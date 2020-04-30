@@ -7,6 +7,7 @@ import {Comments} from "./components/comments";
 import {FilmsList} from './components/films-list';
 import {FilmDetails} from './components/film-details';
 import {Film} from './components/film';
+import {NoFilms} from './components/no-films';
 
 import {generateFilms} from './data/film';
 import {generateSort} from './data/sort';
@@ -16,7 +17,7 @@ import {getRankName} from './data/profile';
 
 import {render, renderPosition} from './utils';
 
-const FILMS_COUNT = 22;
+const FILMS_COUNT = 0;
 const SHOWING_FILMS_COUNT_ON_START = 5;
 const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
 
@@ -73,22 +74,10 @@ const renderFilmDetails = (card, film) => {
 const renderFilms = () => {
   let showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
 
-  films.slice(0, showingFilmsCount).forEach((film) => {
-    const filmCard = new Film(film).getElement();
-
-    render(filmsListContainer, filmCard, renderPosition.APPEND);
-
-    renderFilmDetails(filmCard, film);
-  });
-
-  const showMoreButton = new ShowMoreButton();
-  render(filmsList, showMoreButton.getElement(), renderPosition.APPEND);
-
-  showMoreButton.getElement().addEventListener(`click`, () => {
-    const prevFilmsCount = showingFilmsCount;
-    showingFilmsCount = showingFilmsCount + SHOWING_FILMS_COUNT_BY_BUTTON;
-
-    films.slice(prevFilmsCount, showingFilmsCount).forEach((film) => {
+  if (films.length === 0) {
+    render(filmsList, new NoFilms().getElement(), renderPosition.PREPEND);
+  } else {
+    films.slice(0, showingFilmsCount).forEach((film) => {
       const filmCard = new Film(film).getElement();
 
       render(filmsListContainer, filmCard, renderPosition.APPEND);
@@ -96,11 +85,27 @@ const renderFilms = () => {
       renderFilmDetails(filmCard, film);
     });
 
-    if (showingFilmsCount >= films.length) {
-      showMoreButton.getElement().remove();
-      showMoreButton.removeElement();
-    }
-  });
+    const showMoreButton = new ShowMoreButton();
+    render(filmsList, showMoreButton.getElement(), renderPosition.APPEND);
+
+    showMoreButton.getElement().addEventListener(`click`, () => {
+      const prevFilmsCount = showingFilmsCount;
+      showingFilmsCount = showingFilmsCount + SHOWING_FILMS_COUNT_BY_BUTTON;
+
+      films.slice(prevFilmsCount, showingFilmsCount).forEach((film) => {
+        const filmCard = new Film(film).getElement();
+
+        render(filmsListContainer, filmCard, renderPosition.APPEND);
+
+        renderFilmDetails(filmCard, film);
+      });
+
+      if (showingFilmsCount >= films.length) {
+        showMoreButton.getElement().remove();
+        showMoreButton.removeElement();
+      }
+    });
+  }
 };
 
 renderFilms();

@@ -1,22 +1,16 @@
 import {createElement} from "../utils";
 
-const createFilmsContainerTemplate = () => {
-  return `<section class="films">
-    <section class="films-list">
-      <div class="films-list__container">
-
-      </div>
-    </section>
-  </section>`;
+const createNoFilmsTemplate = () => {
+  return `<h2 class="films-list__title">There are no movies in our database</h2>`;
 };
 
-class FilmsList {
+class NoFilms {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createFilmsContainerTemplate();
+    return createNoFilmsTemplate();
   }
 
   getElement() {
@@ -32,4 +26,4 @@ class FilmsList {
   }
 }
 
-export {FilmsList};
+export {NoFilms};
