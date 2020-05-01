@@ -32,6 +32,10 @@ class Film extends AbstractComponent {
   getTemplate() {
     return createFilmCardTemplate(this._film);
   }
+
+  setClickHandler(handler) {
+    this.getElement().addEventListener(`click`, handler);
+  }
 }
 
 export {Film};
