@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import {AbstractComponent} from "./abstract-component";
 
 const createFullFilmDetailsTemplate = (film) => {
   const {name, description, image, rating, releaseDate, runtime, genre, originalName, director, writers, actors, country} = film;
@@ -82,26 +82,15 @@ const createFullFilmDetailsTemplate = (film) => {
     </section>`;
 };
 
-class FilmDetails {
+class FilmDetails extends AbstractComponent {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createFullFilmDetailsTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
