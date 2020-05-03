@@ -1,5 +1,5 @@
 import {getCommentsCount} from "../data/comments";
-import {createElement} from "../utils";
+import {AbstractComponent} from "./abstract-component";
 
 const createCommentsItem = (text, emoji, date, author) => {
   return `<li class="film-details__comment">
@@ -60,26 +60,15 @@ const createCommentsTemplate = (comments) => {
     `;
 };
 
-class Comments {
+class Comments extends AbstractComponent {
   constructor(comments) {
+    super();
+
     this._comments = comments;
-    this._element = null;
   }
 
   getTemplate() {
     return createCommentsTemplate(this._comments);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

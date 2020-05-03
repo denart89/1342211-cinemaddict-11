@@ -10,7 +10,7 @@ const generateSort = () => {
       hash: `date`,
     },
     {
-      title: `ort by rating`,
+      title: `Sort by rating`,
       hash: `rating`,
     },
   ];

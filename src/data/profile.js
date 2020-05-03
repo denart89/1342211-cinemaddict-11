@@ -1,4 +1,4 @@
-import {getRandomIntegerNumber} from "../utils";
+import {getRandomIntegerNumber} from "../utils/common";
 
 const getRankName = () => {
   const randomIntegerNumber = getRandomIntegerNumber(0, 30);
