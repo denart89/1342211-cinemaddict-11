@@ -82,7 +82,7 @@ const createFullFilmDetailsTemplate = (film) => {
     </section>`;
 };
 
-class FilmDetails extends AbstractComponent {
+class FilmDetailsComponent extends AbstractComponent {
   constructor(film) {
     super();
 
@@ -98,4 +98,4 @@ class FilmDetails extends AbstractComponent {
   }
 }
 
-export {FilmDetails};
+export {FilmDetailsComponent};

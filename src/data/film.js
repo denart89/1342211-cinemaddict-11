@@ -1,4 +1,4 @@
-import {getRandomArrayItem} from "../utils/common";
+import {getRandomArrayItem, getRandomIntegerNumber} from "../utils/common";
 import {getCommentsCount} from "../data/comments";
 
 const nameItems = [
@@ -31,11 +31,11 @@ const generateFilm = () => {
     originalName: `Invisible Man 2020`,
     image: getRandomArrayItem(posterItems),
     description: getRandomArrayItem(descriptionItems),
-    rating: `7.4`,
+    rating: getRandomIntegerNumber(1, 9),
     releaseDate: {
       day: 2,
       month: `April`,
-      year: 1989,
+      year: getRandomIntegerNumber(2000, 2020),
     },
     director: `Denis Russkikh`,
     writers: `Anne Wigton, Heinz Herald, Richard Weil`,
