@@ -17,7 +17,7 @@ const createFilterTemplate = (filter) => {
   </nav>`;
 };
 
-class Filter extends AbstractComponent {
+class FilterComponent extends AbstractComponent {
   constructor(filter) {
     super();
 
@@ -29,4 +29,4 @@ class Filter extends AbstractComponent {
   }
 }
 
-export {Filter};
+export {FilterComponent};

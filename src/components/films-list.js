@@ -10,10 +10,10 @@ const createFilmsContainerTemplate = () => {
   </section>`;
 };
 
-class FilmsList extends AbstractComponent {
+class FilmsListComponent extends AbstractComponent {
   getTemplate() {
     return createFilmsContainerTemplate();
   }
 }
 
-export {FilmsList};
+export {FilmsListComponent};

@@ -7,7 +7,7 @@ const createProfileTemplate = (name) => {
   </section>`;
 };
 
-class Profile extends AbstractComponent {
+class ProfileComponent extends AbstractComponent {
   constructor(profile) {
     super();
 
@@ -19,4 +19,4 @@ class Profile extends AbstractComponent {
   }
 }
 
-export {Profile};
+export {ProfileComponent};

@@ -1,20 +1,20 @@
-import {remove, render, renderPosition} from "../utils/render";
-import {FilmDetails} from "../components/film-details";
-import {Comments} from "../components/comments";
+import {FilmDetailsComponent} from "../components/film-details";
+import {CommentsComponent} from "../components/comments";
+import {NoFilmsComponent} from "../components/no-films";
+import {FilmComponent} from "../components/film";
+import {ShowMoreButtonComponent} from "../components/show-more-button";
+import {FilmsListComponent} from "../components/films-list";
 import {generateComments} from "../data/comments";
-import {NoFilms} from "../components/no-films";
-import {Film} from "../components/film";
-import {ShowMoreButton} from "../components/show-more-button";
-import {FilmsList} from "../components/films-list";
+import {remove, render, renderPosition} from "../utils/render";
 
 const SHOWING_FILMS_COUNT_ON_START = 5;
 const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
 
-class PageController {
+class Page {
   constructor() {
-    this._showMoreButton = new ShowMoreButton();
-    this._filmsList = new FilmsList();
-    this._noFilms = new NoFilms();
+    this._showMoreButton = new ShowMoreButtonComponent();
+    this._filmsList = new FilmsListComponent();
+    this._noFilms = new NoFilmsComponent();
     this._filmsListContainer = this._filmsList.getElement().querySelector(`.films-list__container`);
     this._body = document.querySelector(`body`);
     this._main = document.querySelector(`.main`);
@@ -33,7 +33,7 @@ class PageController {
       render(this._main, this._noFilms, renderPosition.APPEND);
     } else {
       films.slice(0, showingFilmsCount).forEach((film) => {
-        const cardFilm = new Film(film);
+        const cardFilm = new FilmComponent(film);
 
         render(this._filmsListContainer, cardFilm, renderPosition.APPEND);
 
@@ -47,7 +47,7 @@ class PageController {
         showingFilmsCount = showingFilmsCount + SHOWING_FILMS_COUNT_BY_BUTTON;
 
         films.slice(prevFilmsCount, showingFilmsCount).forEach((film) => {
-          const filmCard = new Film(film);
+          const filmCard = new FilmComponent(film);
 
           render(this._filmsListContainer, filmCard, renderPosition.APPEND);
 
@@ -65,13 +65,13 @@ class PageController {
   renderFilmDetails(card, film) {
     card.setClickHandler((evt) => {
       if (evt.target.classList.contains(`film-card__poster`) || evt.target.classList.contains(`film-card__title`) || evt.target.classList.contains(`film-card__comments`)) {
-        const filmDetails = new FilmDetails(film);
+        const filmDetails = new FilmDetailsComponent(film);
 
         render(this._body, filmDetails, renderPosition.APPEND);
 
         const comments = this._body.querySelector(`.film-details .form-details__bottom-container`);
 
-        render(comments, new Comments(generateComments()), renderPosition.APPEND);
+        render(comments, new CommentsComponent(generateComments()), renderPosition.APPEND);
 
         this.closeFilmDetails(filmDetails);
       }
@@ -93,4 +93,4 @@ class PageController {
   }
 }
 
-export {PageController};
+export {Page};

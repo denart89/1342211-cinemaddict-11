@@ -22,7 +22,7 @@ const createFilmCardTemplate = (film) => {
         </article>`;
 };
 
-class Film extends AbstractComponent {
+class FilmComponent extends AbstractComponent {
   constructor(film) {
     super();
 
@@ -38,4 +38,4 @@ class Film extends AbstractComponent {
   }
 }
 
-export {Film};
+export {FilmComponent};

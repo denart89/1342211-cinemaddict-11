@@ -60,7 +60,7 @@ const createCommentsTemplate = (comments) => {
     `;
 };
 
-class Comments extends AbstractComponent {
+class CommentsComponent extends AbstractComponent {
   constructor(comments) {
     super();
 
@@ -72,4 +72,4 @@ class Comments extends AbstractComponent {
   }
 }
 
-export {Comments};
+export {CommentsComponent};

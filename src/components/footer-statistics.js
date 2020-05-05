@@ -4,10 +4,10 @@ const createFooterStatisticsTemplate = () => {
   return `<p>130 291 movies inside</p>`;
 };
 
-class FooterStatistics extends AbstractComponent {
+class FooterStatisticsComponent extends AbstractComponent {
   getTemplate() {
     return createFooterStatisticsTemplate();
   }
 }
 
-export {FooterStatistics};
+export {FooterStatisticsComponent};

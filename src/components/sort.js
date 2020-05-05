@@ -12,7 +12,7 @@ const createSortTemplate = (sort) => {
   </ul>`;
 };
 
-class Sort extends AbstractComponent {
+class SortComponent extends AbstractComponent {
   constructor(sort) {
     super();
 
@@ -24,4 +24,4 @@ class Sort extends AbstractComponent {
   }
 }
 
-export {Sort};
+export {SortComponent};

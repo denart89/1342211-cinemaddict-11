@@ -1,7 +1,7 @@
-import {Profile} from './components/profile';
-import {Filter} from './components/filter';
-import {Sort} from './components/sort';
-import {FooterStatistics} from './components/footer-statistics';
+import {ProfileComponent} from './components/profile';
+import {FilterComponent} from './components/filter';
+import {SortComponent} from './components/sort';
+import {FooterStatisticsComponent} from './components/footer-statistics';
 
 import {generateSort} from './data/sort';
 import {generateFilter} from './data/filter';
@@ -10,7 +10,7 @@ import {generateFilms} from "./data/film";
 
 import {render, renderPosition} from './utils/render';
 
-import {PageController} from './controllers/PageController';
+import {Page} from './controllers/page';
 
 const films = generateFilms(22);
 
@@ -19,15 +19,15 @@ const header = body.querySelector(`.header`);
 const main = body.querySelector(`.main`);
 const footerStatistics = body.querySelector(`.footer .footer__statistics`);
 
-render(header, new Profile(getRankName()), renderPosition.APPEND);
+render(header, new ProfileComponent(getRankName()), renderPosition.APPEND);
 
-render(main, new Filter(generateFilter()), renderPosition.PREPEND);
+render(main, new FilterComponent(generateFilter()), renderPosition.PREPEND);
 
 const navigation = document.querySelector(`.main-navigation`);
 
-render(navigation, new Sort(generateSort()), renderPosition.AFTER);
+render(navigation, new SortComponent(generateSort()), renderPosition.AFTER);
 
-const pageController = new PageController();
+const pageController = new Page();
 pageController.render(films);
 
-render(footerStatistics, new FooterStatistics(), renderPosition.APPEND);
+render(footerStatistics, new FooterStatisticsComponent(), renderPosition.APPEND);
