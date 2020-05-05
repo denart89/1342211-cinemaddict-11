@@ -49,7 +49,7 @@ class Page {
     }
 
     return sortedFilms.slice(from, to);
-  };
+  }
 
   renderFilms(films) {
     films.forEach((film) => {
