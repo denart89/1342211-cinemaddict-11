@@ -1,17 +1,17 @@
-import {FilmDetailsComponent} from "../components/film-details";
-import {CommentsComponent} from "../components/comments";
-import {NoFilmsComponent} from "../components/no-films";
-import {FilmComponent} from "../components/film";
-import {ShowMoreButtonComponent} from "../components/show-more-button";
-import {FilmsListComponent} from "../components/films-list";
-import {SortComponent, SortType} from "../components/sort";
+import {FilmDetailsComponent} from "../components/film-details-component";
+import {CommentsComponent} from "../components/comments-component";
+import {NoFilmsComponent} from "../components/no-films-component";
+import {FilmComponent} from "../components/film-component";
+import {ShowMoreButtonComponent} from "../components/show-more-button-component";
+import {FilmsListComponent} from "../components/film-list-component";
+import {SortComponent, SortType} from "../components/sort-component";
 import {generateComments} from "../data/comments";
 import {remove, render, renderPosition} from "../utils/render";
 
 const SHOWING_FILMS_COUNT_ON_START = 5;
 const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
 
-class Page {
+class PageController {
   constructor() {
     this._showMoreButton = new ShowMoreButtonComponent();
     this._filmsList = new FilmsListComponent();
@@ -141,4 +141,4 @@ class Page {
   }
 }
 
-export {Page};
+export {PageController};

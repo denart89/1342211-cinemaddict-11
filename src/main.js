@@ -1,6 +1,6 @@
-import {ProfileComponent} from './components/profile';
-import {FilterComponent} from './components/filter';
-import {FooterStatisticsComponent} from './components/footer-statistics';
+import {ProfileComponent} from './components/profile-component';
+import {FilterComponent} from './components/filter-component';
+import {FooterStatisticsComponent} from './components/footer-statistics-component';
 
 import {generateFilter} from './data/filter';
 import {getRankName} from './data/profile';
@@ -8,7 +8,7 @@ import {generateFilms} from "./data/film";
 
 import {render, renderPosition} from './utils/render';
 
-import {Page} from './controllers/page';
+import {PageController} from './controllers/page-controller';
 
 const films = generateFilms(22);
 
@@ -21,7 +21,7 @@ render(header, new ProfileComponent(getRankName()), renderPosition.APPEND);
 
 render(main, new FilterComponent(generateFilter()), renderPosition.PREPEND);
 
-const pageController = new Page();
+const pageController = new PageController();
 pageController.render(films);
 
 render(footerStatistics, new FooterStatisticsComponent(), renderPosition.APPEND);
