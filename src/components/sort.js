@@ -35,6 +35,8 @@ class SortComponent extends AbstractComponent {
       evt.preventDefault();
 
       const sortType = evt.target.dataset.sortType;
+      const sortButtons = this.getElement().querySelectorAll(`.sort__button`);
+      const sortButtonClassActive = `sort__button--active`;
 
       if (evt.target.tagName !== `A`) {
         return;
@@ -43,6 +45,12 @@ class SortComponent extends AbstractComponent {
       if (this._currentSortType === sortType) {
         return;
       }
+
+      sortButtons.forEach((button) => {
+        button.classList.remove(sortButtonClassActive);
+      });
+
+      evt.target.classList.add(sortButtonClassActive);
 
       this._currentSortType = sortType;
 

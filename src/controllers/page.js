@@ -78,7 +78,9 @@ class Page {
         const prevFilmsCount = showingFilmsCount;
         showingFilmsCount = showingFilmsCount + SHOWING_FILMS_COUNT_BY_BUTTON;
 
-        this.renderFilms(films.slice(prevFilmsCount, showingFilmsCount));
+        const sortedFilms = this.getSortedTasks(films, this._sort.getSortType(), prevFilmsCount, showingFilmsCount);
+
+        this.renderFilms(sortedFilms);
 
         if (showingFilmsCount >= films.length) {
           remove(this._showMoreButton);
@@ -95,7 +97,6 @@ class Page {
       renderShowMoreButton();
     }
 
-    // TODO: Проверить, что не так с сортировкой при нажатии на кнопку "Show more"
     this._sort.setSortTypeChangeHandler((sortType) => {
       showingFilmsCount = SHOWING_FILMS_COUNT_BY_BUTTON;
 
