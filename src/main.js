@@ -9,6 +9,7 @@ import {generateFilms} from "./data/film";
 import {render, renderPosition} from './utils/render';
 
 import {PageController} from './controllers/page-controller';
+import {FilmsContainerComponent} from "./components/films-container-component";
 
 const films = generateFilms(22);
 
@@ -21,7 +22,9 @@ render(header, new ProfileComponent(getRankName()), renderPosition.APPEND);
 
 render(main, new FilterComponent(generateFilter()), renderPosition.PREPEND);
 
-const pageController = new PageController();
+const filmContainerComponent = new FilmsContainerComponent();
+
+const pageController = new PageController(filmContainerComponent);
 pageController.render(films);
 
 render(footerStatistics, new FooterStatisticsComponent(), renderPosition.APPEND);

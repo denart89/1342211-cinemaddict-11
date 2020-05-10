@@ -29,7 +29,6 @@ class SortComponent extends AbstractComponent {
     return this._currentSortType;
   }
 
-  // TODO: Дописать переключение класса у элементов на активный
   setSortTypeChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
