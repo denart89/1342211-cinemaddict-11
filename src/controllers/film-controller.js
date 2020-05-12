@@ -17,6 +17,18 @@ export default class FilmController {
     this._filmComponent = new FilmComponent(film);
     render(this._container, this._filmComponent, renderPosition.APPEND);
 
+    this._filmComponent.setWatchListButtonClickHandler((evt) => {
+      evt.preventDefault();
+    });
+
+    this._filmComponent.setWatchedButtonClickHandler((evt) => {
+      evt.preventDefault();
+    });
+
+    this._filmComponent.setFavoriteButtonClickHandler((evt) => {
+      evt.preventDefault();
+    });
+
     this._renderFilmDetails(film);
   }
 
