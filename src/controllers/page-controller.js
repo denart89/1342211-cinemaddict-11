@@ -1,12 +1,9 @@
-import {FilmDetailsComponent} from "../components/film-details-component";
-import {CommentsComponent} from "../components/comments-component";
 import {NoFilmsComponent} from "../components/no-films-component";
-import {FilmComponent} from "../components/film-component";
 import {ShowMoreButtonComponent} from "../components/show-more-button-component";
 import {FilmsListComponent} from "../components/film-list-component";
 import {SortComponent, SortType} from "../components/sort-component";
-import {generateComments} from "../data/comments";
 import {remove, render, renderPosition} from "../utils/render";
+import FilmController from "./film-controller";
 
 const SHOWING_FILMS_COUNT_ON_START = 5;
 const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
@@ -25,7 +22,6 @@ class PageController {
     this._noFilmsComponent = new NoFilmsComponent();
     this._sortComponent = new SortComponent();
     this._filmsListContainerComponent = this._filmsListComponent.getElement().querySelector(`.films-list__container`);
-    this._body = document.querySelector(`body`);
     this._main = document.querySelector(`.main`);
     this._navigation = document.querySelector(`.main-navigation`);
 
@@ -45,7 +41,7 @@ class PageController {
     if (films.length === 0) {
       render(this._filmsListContainerComponent, this._noFilmsComponent, renderPosition.APPEND);
     } else {
-      this._renderFilms(films.slice(0, this._showingFilmsCountOnStart));
+      this._renderFilms(this._filmsListContainerComponent, films.slice(0, this._showingFilmsCountOnStart));
 
       this._renderShowMoreButton();
     }
@@ -83,29 +79,13 @@ class PageController {
     return sortedFilms.slice(from, to);
   }
 
-  _renderFilms(films) {
-    films.forEach((film) => {
-      const cardFilm = new FilmComponent(film);
+  _renderFilms(filmListElement, films) {
+    films.map((film) => {
+      const filmController = new FilmController(filmListElement);
 
-      render(this._filmsListContainerComponent, cardFilm, renderPosition.APPEND);
+      filmController.render(film);
 
-      this._renderFilmDetails(cardFilm, film);
-    });
-  }
-
-  _renderFilmDetails(card, film) {
-    card.setClickHandler((evt) => {
-      if (evt.target.classList.contains(`film-card__poster`) || evt.target.classList.contains(`film-card__title`) || evt.target.classList.contains(`film-card__comments`)) {
-        const filmDetails = new FilmDetailsComponent(film);
-
-        render(this._body, filmDetails, renderPosition.APPEND);
-
-        const comments = this._body.querySelector(`.film-details .form-details__bottom-container`);
-
-        render(comments, new CommentsComponent(generateComments()), renderPosition.APPEND);
-
-        this._closeFilmDetails(filmDetails);
-      }
+      return filmController;
     });
   }
 
@@ -123,25 +103,11 @@ class PageController {
 
       const sortedFilms = this._getSortedTasks(this._films, this._sortComponent.getSortType(), prevFilmsCount, this._showingFilmsCountOnStart);
 
-      this._renderFilms(sortedFilms);
+      this._renderFilms(this._filmsListContainerComponent, sortedFilms);
 
       if (this._showingFilmsCountOnStart >= this._films.length) {
         remove(this._showMoreButtonComponent);
         this._showMoreButtonComponent.removeElement();
-      }
-    });
-  }
-
-  _closeFilmDetails(filmDetails) {
-    filmDetails.setClickHandler((evt) => {
-      if (evt.target.classList.contains(`film-details__close-btn`)) {
-        remove(filmDetails);
-      }
-    });
-
-    document.addEventListener(`keydown`, (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        remove(filmDetails);
       }
     });
   }
@@ -151,7 +117,7 @@ class PageController {
 
     this._filmsListContainerComponent.innerHTML = ``;
 
-    this._renderFilms(sortedFilms);
+    this._renderFilms(this._filmsListContainerComponent, sortedFilms);
 
     this._renderShowMoreButton();
   }
