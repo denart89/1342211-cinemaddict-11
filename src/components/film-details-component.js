@@ -96,6 +96,18 @@ class FilmDetailsComponent extends AbstractComponent {
   setClickHandler(handler) {
     this.getElement().addEventListener(`click`, handler);
   }
+
+  setWatchListButtonClickHandler(handler) {
+    this.getElement().querySelector(`#watchlist`).addEventListener(`click`, handler);
+  }
+
+  setWatchedButtonClickHandler(handler) {
+    this.getElement().querySelector(`#watched`).addEventListener(`click`, handler);
+  }
+
+  setFavoriteButtonClickHandler(handler) {
+    this.getElement().querySelector(`#favorite`).addEventListener(`click`, handler);
+  }
 }
 
 export {FilmDetailsComponent};
