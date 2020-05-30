@@ -1,5 +1,4 @@
 import {getRandomArrayItem, getRandomIntegerNumber} from "../utils/common";
-import {getCommentsCount} from "../data/comments";
 
 const nameItems = [
   `Джентльмены`,
@@ -27,6 +26,7 @@ const posterItems = [
 
 const generateFilm = () => {
   return {
+    id: String(new Date() + Math.random()),
     name: getRandomArrayItem(nameItems),
     originalName: `Invisible Man 2020`,
     image: getRandomArrayItem(posterItems),
@@ -47,7 +47,6 @@ const generateFilm = () => {
     },
     country: `USA`,
     ageRating: `18+`,
-    comments: getCommentsCount(),
   };
 };
 

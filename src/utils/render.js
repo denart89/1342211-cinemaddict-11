@@ -35,7 +35,7 @@ const remove = (component) => {
 };
 
 const replace = (newComponent, oldComponent) => {
-  const parentElement = oldComponent.getElement().parentElement;
+  const parentElement = oldComponent.getElement().parentNode;
   const newElement = newComponent.getElement();
   const oldElement = oldComponent.getElement();
 
