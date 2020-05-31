@@ -4,8 +4,9 @@ const createFilterTemplate = (filters, isActive) => {
   const filterItems = filters.map((filter) => {
     const {id, name, count} = filter;
     const activeClass = isActive === id ? ` main-navigation__item--active` : ``;
+    const itemCount = id !== `all` ? `<span class="main-navigation__item-count">${count}</span>` : ``;
 
-    return `<a id="${id}" href="#" class="main-navigation__item${activeClass}">${name} ${count ? `<span class="main-navigation__item-count">${count}</span>` : ``}</a>`;
+    return `<a id="${id}" href="#" class="main-navigation__item${activeClass}">${name} ${itemCount}</a>`;
   }).join(``);
 
   return `<div class="main-navigation__items">
@@ -18,7 +19,7 @@ class FilterComponent extends AbstractSmartComponent {
     super();
 
     this._filter = filter;
-    this._activeFilter = this.checkActiveFilter(filter);
+    this._activeFilter = this.getActiveFilter(filter);
 
     this.filterChangeHandler = null;
   }
@@ -47,7 +48,7 @@ class FilterComponent extends AbstractSmartComponent {
     this.filterChangeHandler = handler;
   }
 
-  checkActiveFilter(filterData) {
+  getActiveFilter(filterData) {
     let activeFilter = ``;
 
     for (const item of filterData) {

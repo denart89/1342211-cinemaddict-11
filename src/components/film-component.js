@@ -45,7 +45,9 @@ class FilmComponent extends AbstractComponent {
   }
 
   setClickHandler(handler) {
-    this.getElement().addEventListener(`click`, handler);
+    this.getElement().querySelectorAll(`img.film-card__poster, h3.film-card__title, a.film-card__comments`).forEach((elem) => {
+      elem.addEventListener(`click`, handler);
+    });
   }
 
   setWatchListButtonClickHandler(handler) {

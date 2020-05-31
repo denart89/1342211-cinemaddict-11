@@ -151,7 +151,6 @@ class FilmDetailsComponent extends AbstractSmartComponent {
     this._setNewCommentSubmitHandler = null;
     this.setEmojiClickHandler();
     this._onCommentsChange = this._onCommentsChange.bind(this);
-
     this._comments.setDataChangeHandler(this._onCommentsChange);
   }
 
@@ -174,7 +173,6 @@ class FilmDetailsComponent extends AbstractSmartComponent {
 
   setWatchListButtonClickHandler(handler) {
     this.getElement().querySelector(`#watchlist`).addEventListener(`click`, handler);
-    console.log(`tra-t-ata`)
     this._setWatchListHandler = handler;
   }
 

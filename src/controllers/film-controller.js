@@ -8,6 +8,7 @@ export default class FilmController {
   constructor(container, onDataChange, onViewChange) {
     this._container = container;
 
+    this._film = null;
     this._filmComponent = null;
     this._filmDetailsComponent = null;
 
@@ -19,27 +20,33 @@ export default class FilmController {
     this._onViewChange = onViewChange;
     this._isCommentsChanged = false;
 
+    this._onFilmClick = this._onFilmClick.bind(this);
+
     this._onCommentClick = this._onCommentClick.bind(this);
   }
 
   render(film) {
+    this._film = film;
     const oldFilmComponent = this._filmComponent;
     const oldFilmDetailsComponent = this._filmDetailsComponent;
 
     this._comments.setComments(generateComments());
 
-    this._filmComponent = new FilmComponent(film, this._comments);
-    this._createCardDataChangeHandlers(film);
+    this._filmComponent = new FilmComponent(this._film, this._comments);
+    this._createCardDataChangeHandlers(this._film);
 
-    this._filmDetailsComponent = new FilmDetailsComponent(film, this._comments);
-    this._createFilmDetailsHandlers(film);
+    this._filmComponent.setClickHandler(this._onFilmClick);
 
-    if (!oldFilmComponent && !oldFilmDetailsComponent) {
+    if (!oldFilmComponent) {
       render(this._container, this._filmComponent, renderPosition.APPEND);
     } else {
       replace(this._filmComponent, oldFilmComponent);
-      replace(this._filmDetailsComponent, oldFilmDetailsComponent);
-      this._createFilmDetailsHandlers(film);
+
+      if (oldFilmDetailsComponent) {
+        this._filmDetailsComponent = new FilmDetailsComponent(this._film, this._comments);
+        replace(this._filmDetailsComponent, oldFilmDetailsComponent);
+        this._createFilmDetailsHandlers(film);
+      }
     }
   }
 
@@ -48,17 +55,9 @@ export default class FilmController {
   }
 
   _closeFilmDetails() {
-    this._filmDetailsComponent.setClickHandler((evt) => {
-      if (evt.target.classList.contains(`film-details__close-btn`)) {
-        this._filmDetailsComponent.getElement().remove();
-      }
-    });
-
-    document.addEventListener(`keydown`, (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        this._filmDetailsComponent.getElement().remove();
-      }
-    });
+    if (this._filmDetailsComponent) {
+      this._filmDetailsComponent.getElement().remove();
+    }
   }
 
   _createButtonClickHandler(film, changedData) {
@@ -108,17 +107,22 @@ export default class FilmController {
       this._onCommentsChange(null, newComment);
     });
 
-    this._filmComponent.setClickHandler((evt) => {
-      if (evt.target.classList.contains(`film-card__poster`) || evt.target.classList.contains(`film-card__title`) || evt.target.classList.contains(`film-card__comments`)) {
-        render(this._body, this._filmDetailsComponent, renderPosition.APPEND);
-
-        this._closeFilmDetails();
+    document.addEventListener(`keydown`, (evt) => {
+      if (evt.keyCode === 27) {
+        remove(this._filmDetailsComponent);
       }
     });
   }
 
   _setDefaultView() {
     this._closeFilmDetails();
+  }
+
+  _onFilmClick() {
+    this._onViewChange();
+    this._filmDetailsComponent = new FilmDetailsComponent(this._film, this._comments);
+    this._createFilmDetailsHandlers(this._film);
+    render(this._body, this._filmDetailsComponent, renderPosition.APPEND);
   }
 
   _onCommentClick(commentId) {

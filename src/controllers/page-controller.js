@@ -48,7 +48,7 @@ class PageController {
     if (films.length === 0) {
       render(this._filmsListContainerComponent, this._noFilmsComponent, renderPosition.APPEND);
     } else {
-      this._renderFilms(this._filmsListContainerComponent, films.slice(0, this._showingFilmsCountOnStart), this._onDataChange, this._onDataChange);
+      this._renderFilms(this._filmsListContainerComponent, films.slice(0, this._showingFilmsCountOnStart), this._onDataChange, this._onViewChange);
 
       this._renderShowMoreButton();
     }

@@ -13,8 +13,6 @@ class AbstractSmartComponent extends AbstractComponent {
 
     const newElement = this.getElement();
 
-    console.log(parent)
-
     parent.replaceChild(newElement, oldElement);
 
     this.recoveryListeners();
