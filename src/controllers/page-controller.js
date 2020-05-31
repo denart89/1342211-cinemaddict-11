@@ -10,12 +10,11 @@ class PageController {
     this._container = container;
     this._filmsModel = filmsModel;
 
+    this._renderedFilms = 0;
     this._showingFilmsCountOnStart = 5;
-    this._showingFilmsCountByButton = 5;
 
     this._films = [];
     this._showedFilmControllers = [];
-    this._renderedFilms = 0;
 
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
     this._filmsListComponent = new FilmsListComponent();
@@ -60,12 +59,28 @@ class PageController {
 
         this._showedFilmControllers = this._showedFilmControllers.concat(filmController);
       });
+
       this._renderedFilms = Math.min(to, films.length);
 
       if (films.length > this._renderedFilms) {
         this._renderShowMoreButton(films);
       }
     }
+  }
+
+  _renderShowMoreButton(films) {
+    render(this._filmsListComponent.getElement(), this._showMoreButtonComponent, renderPosition.APPEND);
+
+    const showMoreButtonClick = () => {
+      this._renderFilms(this._filmsListContainerComponent, films);
+
+      if (this._renderedFilms >= films.length) {
+        this._showMoreButtonComponent.removeClickHandler(showMoreButtonClick);
+        remove(this._showMoreButtonComponent);
+      }
+    };
+
+    this._showMoreButtonComponent.setClickHandler(showMoreButtonClick);
   }
 
   _renderSort() {
@@ -131,19 +146,19 @@ class PageController {
     this._renderFilms(this._filmsListContainerComponent, this._films);
   }
 
-  _renderShowMoreButton(films) {
-    render(this._filmsListComponent.getElement(), this._showMoreButtonComponent, renderPosition.APPEND);
+  show() {
+    this._container.show();
+    this._sortComponent.show();
+  }
 
-    const showMoreButtonClick = () => {
-      this._renderFilms(this._filmsListContainerComponent, films);
+  hide() {
+    const sortedFilms = this._getSortedFilms(this._films, SortType.DEFAULT);
 
-      if (this._renderedFilms >= this._films.length) {
-        this._showMoreButtonComponent.removeClickHandler(showMoreButtonClick);
-        remove(this._showMoreButtonComponent);
-      }
-    };
-
-    this._showMoreButtonComponent.setClickHandler(showMoreButtonClick);
+    this._container.hide();
+    this._removeFilms();
+    this._renderFilms(this._filmsListContainerComponent, sortedFilms);
+    this._sortComponent.clearSortMenu();
+    this._sortComponent.hide();
   }
 }
 

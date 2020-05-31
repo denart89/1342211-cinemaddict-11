@@ -18,6 +18,8 @@ export default class FilmController {
     this._onViewChange = onViewChange;
     this._isCommentsChanged = false;
 
+    this._body = document.querySelector(`body`);
+
     this._onFilmClick = this._onFilmClick.bind(this);
 
     this._onCommentClick = this._onCommentClick.bind(this);
@@ -113,12 +115,10 @@ export default class FilmController {
   }
 
   _onFilmClick() {
-    const footer = document.querySelector(`.footer`);
-
     this._onViewChange();
     this._filmDetailsComponent = new FilmDetailsComponent(this._film, this._comments);
     this._createFilmDetailsHandlers(this._film);
-    render(footer, this._filmDetailsComponent, renderPosition.APPEND);
+    render(this._body, this._filmDetailsComponent, renderPosition.APPEND);
   }
 
   _onCommentClick(commentId) {

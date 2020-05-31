@@ -24,6 +24,15 @@ const posterItems = [
   `the-man-with-the-golden-arm.jpg`,
 ];
 
+const genres = [
+  `Drama`,
+  `Film-Noir`,
+  `Mystery`,
+  `Horror`,
+  `Sci-Fi`,
+  `Thriller`,
+];
+
 const generateFilm = () => {
   return {
     id: String(new Date() + Math.random()),
@@ -40,7 +49,7 @@ const generateFilm = () => {
     director: `Denis Russkikh`,
     writers: `Anne Wigton, Heinz Herald, Richard Weil`,
     actors: `Anne Wigton, Heinz Herald, Richard Weil`,
-    genre: `Drama, Film-Noir, Mystery`,
+    genre: getRandomArrayItem(genres),
     runtime: {
       hours: 1,
       minutes: 54,
@@ -54,4 +63,4 @@ const generateFilms = (count) => {
   return new Array(count).fill(``).map(generateFilm);
 };
 
-export {generateFilm, generateFilms};
+export {generateFilm, generateFilms, genres};

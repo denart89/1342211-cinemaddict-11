@@ -10,6 +10,16 @@ class MenuComponent extends AbstractComponent {
   getTemplate() {
     return createFilterTemplate();
   }
+
+  setStatisticClickHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+
+      const hash = evt.target.hash;
+
+      handler(hash);
+    });
+  }
 }
 
 export {MenuComponent};
