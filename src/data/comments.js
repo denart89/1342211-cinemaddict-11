@@ -1,34 +1,42 @@
+import {getRandomIntegerNumber, getRandomArrayItem, generateRandomDate} from '../utils/common';
+
+const commentsEmoji = [
+  `smile`,
+  `sleeping`,
+  `puke`,
+  `angry`,
+];
+
+const commentsText = [
+  `Interesting setting and a good cast`,
+  `Booooooooooring`,
+  `Very very old. Meh`,
+  `Almost two hours? Seriously?`,
+];
+
+const commentsAuthor = [
+  `Ivan Ivanov`,
+  `Peter Petrov`,
+  `Slava Myasnikov`,
+  `Alex Frost`,
+];
+
+const generateComment = (currentElement, index) => {
+  return {
+    id: index,
+    text: getRandomArrayItem(commentsText),
+    emoji: getRandomArrayItem(commentsEmoji),
+    date: generateRandomDate(),
+    author: getRandomArrayItem(commentsAuthor),
+  };
+};
+
 const generateComments = () => {
-  return [
-    {
-      text: `Interesting setting and a good cast`,
-      emoji: `smile`,
-      date: `Today`,
-      author: `Denis Russkikh`,
-    },
-    {
-      text: `Booooooooooring`,
-      emoji: `sleeping`,
-      date: `Today`,
-      author: `Denis Russkikh`,
-    },
-    {
-      text: `Very very old. Meh`,
-      emoji: `puke`,
-      date: `Today`,
-      author: `Denis Russkikh`,
-    },
-    {
-      text: `Almost two hours? Seriously?`,
-      emoji: `angry`,
-      date: `Today`,
-      author: `Denis Russkikh`,
-    },
-  ];
+  const count = getRandomIntegerNumber(1, 5);
+
+  return new Array(count)
+    .fill(``)
+    .map(generateComment);
 };
 
-const getCommentsCount = () => {
-  return generateComments().length;
-};
-
-export {generateComments, getCommentsCount};
+export {generateComment, generateComments, commentsAuthor, commentsEmoji};

@@ -1,31 +1,73 @@
-import {AbstractComponent} from "./abstract-component";
+import {AbstractSmartComponent} from "./abstract-smart-component";
 
-const createFilterItem = (name, count, hash, isActive) => {
-  return (
-    `<a href="#${hash}" class="main-navigation__item${isActive ? ` main-navigation__item--active` : ``}">${name} ${count ? `<span class="main-navigation__item-count">${count}</span>` : ``}</a>`
-  );
-};
+const createFilterTemplate = (filters, isActive) => {
+  const filterItems = filters.map((filter) => {
+    const {id, name, count} = filter;
+    const activeClass = isActive === id ? ` main-navigation__item--active` : ``;
+    const itemCount = id !== `all` ? `<span class="main-navigation__item-count">${count}</span>` : ``;
 
-const createFilterTemplate = (filter) => {
-  const filterItems = filter.map((it) => createFilterItem(it.name, it.count, it.hash, it.isActive)).join(`\n`);
+    return `<a id="${id}" href="#" class="main-navigation__item${activeClass}">${name} ${itemCount}</a>`;
+  }).join(``);
 
-  return `<nav class="main-navigation">
-    <div class="main-navigation__items">
+  return `<div class="main-navigation__items">
         ${filterItems}
-    </div>
-    <a href="#stats" class="main-navigation__additional">Stats</a>
-  </nav>`;
+    </div>`;
 };
 
-class FilterComponent extends AbstractComponent {
+class FilterComponent extends AbstractSmartComponent {
   constructor(filter) {
     super();
 
     this._filter = filter;
+    this._activeFilter = this.getActiveFilter(filter);
+
+    this.filterChangeHandler = null;
   }
 
   getTemplate() {
-    return createFilterTemplate(this._filter);
+    return createFilterTemplate(this._filter, this._activeFilter);
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+
+      if (evt.target.tagName === `A` || evt.target.parentNode.tagName === `A`) {
+        const selectedFilter = evt.target.parentNode.tagName === `A` ? evt.target.parentNode.getAttribute(`id`) : evt.target.getAttribute(`id`);
+
+        if (selectedFilter === this._activeFilter) {
+          return;
+        }
+
+        handler(selectedFilter);
+        this._activeFilter = selectedFilter;
+        this.rerender(this._filter);
+      }
+    });
+
+    this.filterChangeHandler = handler;
+  }
+
+  getActiveFilter(filterData) {
+    let activeFilter = ``;
+
+    for (const item of filterData) {
+      if (item.isActive) {
+        activeFilter = item.id;
+        break;
+      }
+    }
+
+    return activeFilter;
+  }
+
+  rerender(filter) {
+    this._filter = filter;
+    super.rerender();
+  }
+
+  recoveryListeners() {
+    this.setFilterChangeHandler(this.filterChangeHandler);
   }
 }
 

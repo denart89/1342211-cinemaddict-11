@@ -4,12 +4,14 @@ const createFilmCardControlButton = (name, isActive = false) => {
   return `<button class="film-card__controls-item button film-card__controls-item--${name} ${isActive ? `film-card__controls-item--active` : ``}">${name}</button>`;
 };
 
-const createFilmCardTemplate = (film) => {
-  const {name, description, image, rating, releaseDate, runtime, genre, comments} = film;
+const createFilmCardTemplate = (film, comments) => {
+  const {name, description, image, rating, releaseDate, runtime, genre} = film;
 
-  const watchlistButton = createFilmCardControlButton(`add-to-watchlist`);
-  const watchedButton = createFilmCardControlButton(`mark-as-watched`);
-  const favoriteButton = createFilmCardControlButton(`favorite`);
+  const watchlistButton = createFilmCardControlButton(`add-to-watchlist`, film.isWatchlist);
+  const watchedButton = createFilmCardControlButton(`mark-as-watched`, film.isHistory);
+  const favoriteButton = createFilmCardControlButton(`favorite`, film.isFavorites);
+
+  const commentsCount = comments.length;
 
   return `<article class="film-card">
           <h3 class="film-card__title">${name}</h3>
@@ -21,7 +23,7 @@ const createFilmCardTemplate = (film) => {
           </p>
           <img src="./images/posters/${image}" alt="" class="film-card__poster">
           <p class="film-card__description">${description}</p>
-          <a class="film-card__comments">${comments} comments</a>
+          <a class="film-card__comments">${commentsCount} comments</a>
           <form class="film-card__controls">
             ${watchlistButton}
             ${watchedButton}
@@ -31,18 +33,21 @@ const createFilmCardTemplate = (film) => {
 };
 
 class FilmComponent extends AbstractComponent {
-  constructor(film) {
+  constructor(film, comments) {
     super();
 
     this._film = film;
+    this._comments = comments;
   }
 
   getTemplate() {
-    return createFilmCardTemplate(this._film);
+    return createFilmCardTemplate(this._film, this._comments.getComments());
   }
 
   setClickHandler(handler) {
-    this.getElement().addEventListener(`click`, handler);
+    this.getElement().querySelectorAll(`img.film-card__poster, h3.film-card__title, a.film-card__comments`).forEach((elem) => {
+      elem.addEventListener(`click`, handler);
+    });
   }
 
   setWatchListButtonClickHandler(handler) {
