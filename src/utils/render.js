@@ -34,15 +34,11 @@ const remove = (component) => {
   component.removeElement();
 };
 
-const replace = (newComponent, oldComponent) => {
-  const parentElement = oldComponent.getElement().parentNode;
-  const newElement = newComponent.getElement();
-  const oldElement = oldComponent.getElement();
+const replace = (parent, newElement, oldElement) => {
+  const isExistElements = !!(parent && newElement && oldElement);
 
-  const isExistElements = !!(parentElement && newElement && oldElement);
-
-  if (isExistElements && parentElement.contains(oldElement)) {
-    parentElement.replaceChild(newElement, oldElement);
+  if (isExistElements && parent.contains(oldElement)) {
+    parent.replaceChild(newElement, oldElement);
   }
 };
 

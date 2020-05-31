@@ -56,6 +56,15 @@ class SortComponent extends AbstractComponent {
       handler(this._currentSortType);
     });
   }
+
+  clearSortMenu() {
+    const activeButton = this.getElement().querySelector(`.sort__button--active`);
+    activeButton.classList.remove(`sort__button--active`);
+    // накидываем active на первый элемент
+    this.getElement().querySelector(`.sort__button`).classList.add(`sort__button--active`);
+    // сбрасываем сортировку
+    this._currentSortType = SortType.DEFAULT;
+  }
 }
 
 export {

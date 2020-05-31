@@ -14,8 +14,6 @@ export default class FilmController {
 
     this._comments = new CommentsModel();
 
-    this._body = document.querySelector(`body`);
-
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._isCommentsChanged = false;
@@ -40,18 +38,14 @@ export default class FilmController {
     if (!oldFilmComponent) {
       render(this._container, this._filmComponent, renderPosition.APPEND);
     } else {
-      replace(this._filmComponent, oldFilmComponent);
+      replace(oldFilmComponent.getElement().parentNode, this._filmComponent.getElement(), oldFilmComponent.getElement());
 
       if (oldFilmDetailsComponent) {
         this._filmDetailsComponent = new FilmDetailsComponent(this._film, this._comments);
-        replace(this._filmDetailsComponent, oldFilmDetailsComponent);
+        replace(oldFilmDetailsComponent.getElement().parentNode, this._filmDetailsComponent.getElement(), oldFilmDetailsComponent.getElement());
         this._createFilmDetailsHandlers(film);
       }
     }
-  }
-
-  destroy() {
-    remove(this._filmComponent);
   }
 
   _closeFilmDetails() {
@@ -119,10 +113,12 @@ export default class FilmController {
   }
 
   _onFilmClick() {
+    const footer = document.querySelector(`.footer`);
+
     this._onViewChange();
     this._filmDetailsComponent = new FilmDetailsComponent(this._film, this._comments);
     this._createFilmDetailsHandlers(this._film);
-    render(this._body, this._filmDetailsComponent, renderPosition.APPEND);
+    render(footer, this._filmDetailsComponent, renderPosition.APPEND);
   }
 
   _onCommentClick(commentId) {

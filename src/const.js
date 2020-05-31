@@ -4,7 +4,7 @@ export const FilterType = {
     name: `All movies`
   },
   WATCHLIST: {
-    id: `watchlist`,
+    id: `Watchlist`,
     name: `Watchlist`
   },
   HISTORY: {

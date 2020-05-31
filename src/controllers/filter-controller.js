@@ -1,6 +1,6 @@
 import {FilterComponent} from "../components/filter-component.js";
 import {FilterType} from "../const.js";
-import {render, replace, renderPosition} from "../utils/render.js";
+import {render, renderPosition} from "../utils/render.js";
 import {getFilmsByFilter} from "../utils/filter.js";
 
 class FilterController {
@@ -19,6 +19,16 @@ class FilterController {
 
   render() {
     const container = this._container;
+    const filterData = this._getFilterData();
+
+    this._filterComponent = new FilterComponent(filterData);
+
+    render(container, this._filterComponent, renderPosition.PREPEND);
+
+    this._filterComponent.setFilterChangeHandler(this._onFilterChange);
+  }
+
+  _getFilterData() {
     const allFilmsByFilter = this._filmsModel.getFilmsByFilter();
     const filters = Object.values(FilterType).map((filterType) => {
       return {
@@ -29,16 +39,7 @@ class FilterController {
       };
     });
 
-    const oldComponent = this._filterComponent;
-
-    this._filterComponent = new FilterComponent(filters);
-    this._filterComponent.setFilterChangeHandler(this._onFilterChange);
-
-    if (oldComponent) {
-      replace(this._filterComponent, oldComponent);
-    } else {
-      render(container, this._filterComponent, renderPosition.PREPEND);
-    }
+    return filters;
   }
 
   _onFilterChange(filterType) {
@@ -47,7 +48,8 @@ class FilterController {
   }
 
   _onDataChange() {
-    this.render();
+    const filterData = this._getFilterData();
+    this._filterComponent.rerender(filterData);
   }
 }
 
