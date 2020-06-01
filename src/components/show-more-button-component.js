@@ -1,10 +1,10 @@
-import {AbstractComponent} from "./abstract-component";
+import AbstractComponent from "./abstract-component";
 
 const createShowMoreButtonTemplate = () => {
   return `<button class="films-list__show-more">Show more</button>`;
 };
 
-class ShowMoreButtonComponent extends AbstractComponent {
+export default class ShowMoreButtonComponent extends AbstractComponent {
   getTemplate() {
     return createShowMoreButtonTemplate();
   }
@@ -17,5 +17,3 @@ class ShowMoreButtonComponent extends AbstractComponent {
     this.getElement().removeEventListener(`click`, handler);
   }
 }
-
-export {ShowMoreButtonComponent};
