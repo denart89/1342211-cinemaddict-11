@@ -1,4 +1,4 @@
-import {AbstractSmartComponent} from "./abstract-smart-component";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const createFilterTemplate = (filters, isActive) => {
   const filterItems = filters.map((filter) => {
@@ -14,7 +14,7 @@ const createFilterTemplate = (filters, isActive) => {
     </div>`;
 };
 
-class FilterComponent extends AbstractSmartComponent {
+export default class FilterComponent extends AbstractSmartComponent {
   constructor(filter) {
     super();
 
@@ -70,5 +70,3 @@ class FilterComponent extends AbstractSmartComponent {
     this.setFilterChangeHandler(this.filterChangeHandler);
   }
 }
-
-export {FilterComponent};

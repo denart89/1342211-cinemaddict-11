@@ -1,4 +1,4 @@
-class CommentsModel {
+export default class CommentsModel {
   constructor() {
     this._comments = [];
     this._dataChangeHandlers = [];
@@ -21,7 +21,7 @@ class CommentsModel {
   }
 
   removeComment(id) {
-    const index = this._comments.findIndex((currentComment) => currentComment.id === (id * 1));
+    const index = this._comments.findIndex((currentComment) => currentComment.id === id);
 
     if (index === -1) {
       return false;
@@ -42,5 +42,3 @@ class CommentsModel {
     handlers.forEach((handler) => handler());
   }
 }
-
-export {CommentsModel};

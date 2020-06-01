@@ -1,4 +1,4 @@
-import {AbstractComponent} from "./abstract-component";
+import AbstractComponent from "./abstract-component";
 
 const createFilmsListTemplate = () => {
   return `<section class="films-list">
@@ -8,10 +8,8 @@ const createFilmsListTemplate = () => {
     </section>`;
 };
 
-class FilmsListComponent extends AbstractComponent {
+export default class FilmsListComponent extends AbstractComponent {
   getTemplate() {
     return createFilmsListTemplate();
   }
 }
-
-export {FilmsListComponent};

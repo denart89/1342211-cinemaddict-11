@@ -1,4 +1,4 @@
-import {AbstractComponent} from "./abstract-component";
+import AbstractComponent from "./abstract-component";
 
 const createFilterTemplate = () => {
   return `<nav class="main-navigation">
@@ -6,7 +6,7 @@ const createFilterTemplate = () => {
   </nav>`;
 };
 
-class MenuComponent extends AbstractComponent {
+export default class MenuComponent extends AbstractComponent {
   getTemplate() {
     return createFilterTemplate();
   }
@@ -21,5 +21,3 @@ class MenuComponent extends AbstractComponent {
     });
   }
 }
-
-export {MenuComponent};

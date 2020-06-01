@@ -1,41 +1,42 @@
-import {CommentComponent} from "./comment-component";
-import {AbstractSmartComponent} from "./abstract-smart-component";
-import {CommentModel} from "../models/comment-model";
-import {getRandomArrayItem} from "../utils/common";
-import {commentsAuthor, commentsEmoji} from "../data/comments";
+import CommentComponent from "./comment-component";
+import AbstractSmartComponent from "./abstract-smart-component";
+import LocalComment from "../models/local-comment-model";
+import {SHAKE_ANIMATION_TIMEOUT, EMOTIONS, BUTTONS_CODE} from "../constants";
+import moment from "moment";
+import {getFormattedRuntime} from "./film-component";
+import {shake} from "../utils/common";
 
 const createCommentsListTemplate = (comments) => {
-  let commentItem = ``;
-
-  for (const comment of comments) {
-    commentItem = commentItem.concat(new CommentComponent(comment).getTemplate());
-  }
-
-  return commentItem;
+  return comments
+    .map((comment) => new CommentComponent(comment).getTemplate())
+    .join(``);
 };
 
-const createEmojiItem = (emoji, isChecked) => {
+const createEmojiItem = (emotion, isChecked) => {
   return (
-    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="smile" ${isChecked ? `checked` : ``}>
-    <label class="film-details__emoji-label" for="emoji-${emoji}">
-      <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
+    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emotion}" value="smile" ${isChecked ? `checked` : ``}>
+    <label class="film-details__emoji-label" for="emoji-${emotion}">
+      <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji">
     </label>`
   );
 };
 
-const createEmojiTemplate = (emoji) => {
-  return commentsEmoji.map((it) => createEmojiItem(it, it === emoji)).join(``);
+const createEmojiTemplate = (emotion) => {
+  return EMOTIONS.map((it) => createEmojiItem(it, it === emotion)).join(``);
 };
 
-const createEmojiImage = (emoji) => {
-  const emojiImage = `<img src="./images/emoji/${emoji}.png" width="55" height="55">`;
-  return emoji ? emojiImage : ``;
+const createEmojiImage = (emotion) => {
+  const emotionImage = `<img src="./images/emoji/${emotion}.png" width="55" height="55">`;
+  return emotion ? emotionImage : ``;
 };
 
 const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
-  const {name, description, image, rating, releaseDate, runtime, genre, originalName, director, writers, actors, country} = film;
+  const {title, description, poster, rating, releaseDate, runtime, genres, originalTitle, director, writers, actors, country, age} = film;
   const commentsCount = comments.length;
-  const {emoji, text} = options;
+  const {emotion, message} = options;
+  const formattedReleaseDate = moment(releaseDate).format(`YYYY`);
+  const formattedRuntime = getFormattedRuntime(runtime);
+  const getGenres = genres.map((it) => `<span class="film-details__genre">${it}</span>`).join(``);
 
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -45,16 +46,16 @@ const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
             </div>
             <div class="film-details__info-wrap">
               <div class="film-details__poster">
-                <img class="film-details__poster-img" src="./images/posters/${image}" alt="">
+                <img class="film-details__poster-img" src="${poster}" alt="">
 
-                <p class="film-details__age">18+</p>
+                <p class="film-details__age">${age}+</p>
               </div>
 
               <div class="film-details__info">
                 <div class="film-details__info-head">
                   <div class="film-details__title-wrap">
-                    <h3 class="film-details__title">${name}</h3>
-                    <p class="film-details__title-original">${originalName}</p>
+                    <h3 class="film-details__title">${title}</h3>
+                    <p class="film-details__title-original">${originalTitle}</p>
                   </div>
 
                   <div class="film-details__rating">
@@ -69,28 +70,28 @@ const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Writers</td>
-                    <td class="film-details__cell">${writers}</td>
+                    <td class="film-details__cell">${writers.join(`, `)}</td>
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Actors</td>
-                    <td class="film-details__cell">${actors}</td>
+                    <td class="film-details__cell">${actors.join(`, `)}</td>
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Release Date</td>
-                    <td class="film-details__cell">${releaseDate.day} ${releaseDate.month} ${releaseDate.year}</td>
+                    <td class="film-details__cell">${formattedReleaseDate}</td>
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Runtime</td>
-                    <td class="film-details__cell">${runtime.hours}h ${runtime.minutes}m</td>
+                    <td class="film-details__cell">${formattedRuntime}</td>
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Country</td>
                     <td class="film-details__cell">${country}</td>
                   </tr>
                   <tr class="film-details__row">
-                    <td class="film-details__term">Genres</td>
+                    <td class="film-details__term">${genres.length > 1 ? `Genres` : `Genre`}</td>
                     <td class="film-details__cell">
-                      <span class="film-details__genre">${genre}</span>
+                      <span class="film-details__genre">${getGenres}</span>
                     </td>
                   </tr>
                 </table>
@@ -100,13 +101,13 @@ const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
             </div>
 
             <section class="film-details__controls">
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${film.isWatchlist ? `checked` : ``}>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${film.controls.isWatchlist ? `checked` : ``}>
               <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
   
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${film.isHistory ? `checked` : ``}>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${film.controls.isWatched ? `checked` : ``}>
               <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
   
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${film.isFavorites ? `checked` : ``}>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${film.controls.isFavorite ? `checked` : ``}>
               <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
             </section>
           </div>
@@ -121,15 +122,15 @@ const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
   
               <div class="film-details__new-comment">
                 <div for="add-emoji" class="film-details__add-emoji-label">
-                    ${createEmojiImage(emoji)}
+                    ${createEmojiImage(emotion)}
                 </div>
       
                 <label class="film-details__comment-label">
-                  <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text ? text : ``}</textarea>
+                  <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${message ? message : ``}</textarea>
                 </label>
       
                 <div class="film-details__emoji-list">
-                    ${createEmojiTemplate(emoji)}
+                    ${createEmojiTemplate(emotion)}
                 </div>
               </div>    
             </section>
@@ -138,15 +139,14 @@ const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
     </section>`;
 };
 
-class FilmDetailsComponent extends AbstractSmartComponent {
+export default class FilmDetailsComponent extends AbstractSmartComponent {
   constructor(film, comments) {
     super();
 
     this._film = film;
-    this._emoji = null;
+    this._emotion = null;
     this._comments = comments;
-    this._commentText = null;
-    this._deleteButtonId = null;
+    this._message = null;
     this._setRemoveCommentClickHandler = null;
     this._setNewCommentSubmitHandler = null;
     this.setEmojiClickHandler();
@@ -156,8 +156,8 @@ class FilmDetailsComponent extends AbstractSmartComponent {
 
   getTemplate() {
     return createFullFilmDetailsTemplate(this._film, this._comments.getComments(), {
-      emoji: this._emoji,
-      text: this._commentText,
+      emotion: this._emotion,
+      message: this._message,
     });
   }
 
@@ -202,27 +202,22 @@ class FilmDetailsComponent extends AbstractSmartComponent {
     this._setRemoveCommentClickHandler = handler;
   }
 
-  setDeleteButton(id) {
-    this._deleteButtonId = id;
-    this._comments.removeComment(id);
-
-    this.rerender();
-  }
-
   setNewCommentSubmitHandler(handler) {
     const commentInput = this.getElement().querySelector(`.film-details__comment-input`);
 
     commentInput.addEventListener(`input`, (evt) => {
-      this._commentText = evt.target.value;
+      this._message = evt.target.value;
     });
 
     commentInput.addEventListener(`keydown`, (evt) => {
-      if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
-        if (this._emoji && this._commentText) {
-          const newCommentData = this._createNewComment(this._commentText, this._emoji);
+      if (evt.keyCode === BUTTONS_CODE.ENTER && (evt.ctrlKey || evt.metaKey)) {
+        if (this._emotion && this._message) {
+          const newCommentData = this._createNewComment(this._emotion, this._message);
 
-          const newComment = new CommentModel(newCommentData);
+          const newComment = new LocalComment(newCommentData);
           handler(newComment);
+        } else {
+          this.shakeCommentInput(this.getElement().querySelector(`.film-details__comment-input`));
         }
       }
     });
@@ -237,9 +232,9 @@ class FilmDetailsComponent extends AbstractSmartComponent {
       label.addEventListener(`click`, (evt) => {
         evt.preventDefault();
 
-        this._emoji = label.getAttribute(`for`).substring(`emoji-`.length);
+        this._emotion = label.getAttribute(`for`).substring(`emoji-`.length);
 
-        createEmojiImage(this._emoji);
+        createEmojiImage(this._emotion);
 
         this.rerender();
 
@@ -274,28 +269,55 @@ class FilmDetailsComponent extends AbstractSmartComponent {
     this.setEmojiClickHandler();
   }
 
-  _createNewComment(text, emoji) {
-    const currentCommentId = this._comments.getComments().length;
-    const currentRandomAuthor = getRandomArrayItem(commentsAuthor);
-
+  _createNewComment(emotion, message) {
     return {
-      id: currentCommentId,
-      text,
-      emoji,
       date: new Date(),
-      author: currentRandomAuthor,
+      emotion,
+      comment: message,
     };
   }
 
   _clearNewComment() {
-    this._emoji = null;
-    this._commentText = null;
+    this._emotion = null;
+    this._message = null;
   }
 
   _onCommentsChange() {
     this._clearNewComment();
     this.rerender();
   }
-}
 
-export {FilmDetailsComponent};
+  disableCommentButton(id) {
+    const commentsButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    const commentButton = Array.from(commentsButtons).find((button) => button.dataset.id === id);
+
+    commentButton.setAttribute(`disabled`, `disabled`);
+  }
+
+  enableCommentButton(id) {
+    const commentsButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    const commentButton = Array.from(commentsButtons).find((button) => {
+      return button.dataset.id === id;
+    });
+    commentButton.removeAttribute(`disabled`);
+  }
+
+  shake() {
+    shake(this.getElement());
+
+    const formInput = this.getElement().querySelector(`.film-details__comment-input`);
+    formInput.style.boxShadow = `0px 0px 5px 2px red`;
+
+    setTimeout(() => {
+      formInput.style.border = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  shakeCommentInput() {
+    this.shake();
+  }
+
+  shakeComment(comment) {
+    shake(comment);
+  }
+}

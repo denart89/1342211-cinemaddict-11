@@ -1,27 +1,22 @@
-import {FilmComponent} from "../components/film-component";
-import {FilmDetailsComponent} from "../components/film-details-component";
+import FilmComponent from "../components/film-component";
+import FilmDetailsComponent from "../components/film-details-component";
 import {render, renderPosition, replace, remove} from "../utils/render";
-import {generateComments} from "../data/comments";
-import {CommentsModel} from "../models/comments-model";
+import CommentsModel from "../models/comments-model";
+import {BUTTONS_CODE, ERROR_MESSAGES, SHAKE_ANIMATION_TIMEOUT} from "../constants";
+import FilmModel from "../models/film-model";
 
 export default class FilmController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, api) {
     this._container = container;
-
     this._film = null;
     this._filmComponent = null;
     this._filmDetailsComponent = null;
-
-    this._comments = new CommentsModel();
-
+    this._comments = null;
+    this._api = api;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
-    this._isCommentsChanged = false;
-
     this._body = document.querySelector(`body`);
-
     this._onFilmClick = this._onFilmClick.bind(this);
-
     this._onCommentClick = this._onCommentClick.bind(this);
   }
 
@@ -30,11 +25,8 @@ export default class FilmController {
     const oldFilmComponent = this._filmComponent;
     const oldFilmDetailsComponent = this._filmDetailsComponent;
 
-    this._comments.setComments(generateComments());
-
-    this._filmComponent = new FilmComponent(this._film, this._comments);
-    this._createCardDataChangeHandlers(this._film);
-
+    this._filmComponent = new FilmComponent(this._film);
+    this._createCardDataChangeHandlers();
     this._filmComponent.setClickHandler(this._onFilmClick);
 
     if (!oldFilmComponent) {
@@ -56,40 +48,31 @@ export default class FilmController {
     }
   }
 
-  _createButtonClickHandler(film, changedData) {
+  _createButtonClickHandler(changedData) {
     return (evt) => {
       evt.preventDefault();
 
-      this._onDataChange(this, film, Object.assign({}, film, changedData));
+      const newFilm = FilmModel.clone(this._film);
+      newFilm.controls[changedData] = !newFilm.controls[changedData];
+
+      this._onDataChange(this, this._film, newFilm);
     };
   }
 
-  _createCardDataChangeHandlers(film) {
-    const watchListButtonClickHandler = this._createButtonClickHandler(film, {
-      isWatchlist: !film.isWatchlist,
-    });
-    const watchedButtonClickHandler = this._createButtonClickHandler(film, {
-      isHistory: !film.isHistory,
-    });
-    const favoriteButtonClickHandler = this._createButtonClickHandler(film, {
-      isFavorites: !film.isFavorites,
-    });
+  _createCardDataChangeHandlers() {
+    const watchListButtonClickHandler = this._createButtonClickHandler(`isWatchlist`);
+    const watchedButtonClickHandler = this._createButtonClickHandler(`isWatched`);
+    const favoriteButtonClickHandler = this._createButtonClickHandler(`isFavorite`);
 
     this._filmComponent.setWatchListButtonClickHandler(watchListButtonClickHandler);
     this._filmComponent.setWatchedButtonClickHandler(watchedButtonClickHandler);
     this._filmComponent.setFavoriteButtonClickHandler(favoriteButtonClickHandler);
   }
 
-  _createFilmDetailsHandlers(film) {
-    const watchListButtonClickHandler = this._createButtonClickHandler(film, {
-      isWatchlist: !film.isWatchlist,
-    });
-    const watchedButtonClickHandler = this._createButtonClickHandler(film, {
-      isHistory: !film.isHistory,
-    });
-    const favoriteButtonClickHandler = this._createButtonClickHandler(film, {
-      isFavorites: !film.isFavorites,
-    });
+  _createFilmDetailsHandlers() {
+    const watchListButtonClickHandler = this._createButtonClickHandler(`isWatchlist`);
+    const watchedButtonClickHandler = this._createButtonClickHandler(`isWatched`);
+    const favoriteButtonClickHandler = this._createButtonClickHandler(`isFavorite`);
 
     this._filmDetailsComponent.setWatchListButtonClickHandler(watchListButtonClickHandler);
     this._filmDetailsComponent.setWatchedButtonClickHandler(watchedButtonClickHandler);
@@ -100,11 +83,11 @@ export default class FilmController {
     this._filmDetailsComponent.setNewCommentSubmitHandler((newComment) => {
       this._filmDetailsComponent.disable();
 
-      this._onCommentsChange(null, newComment);
+      this._onCommentChange(null, newComment);
     });
 
     document.addEventListener(`keydown`, (evt) => {
-      if (evt.keyCode === 27) {
+      if (evt.keyCode === BUTTONS_CODE.ESC) {
         remove(this._filmDetailsComponent);
       }
     });
@@ -116,21 +99,54 @@ export default class FilmController {
 
   _onFilmClick() {
     this._onViewChange();
-    this._filmDetailsComponent = new FilmDetailsComponent(this._film, this._comments);
-    this._createFilmDetailsHandlers(this._film);
-    render(this._body, this._filmDetailsComponent, renderPosition.APPEND);
+    this._api.getComments(this._film.id).then((comments) => {
+      this._comments = new CommentsModel();
+      this._comments.setComments(comments);
+      this._filmDetailsComponent = new FilmDetailsComponent(this._film, this._comments);
+      this._createFilmDetailsHandlers(this._film);
+      render(this._body, this._filmDetailsComponent, renderPosition.APPEND);
+    })
+      .catch(() => {
+        return Promise.reject(new Error(ERROR_MESSAGES.CONNECTION));
+      });
   }
 
   _onCommentClick(commentId) {
-    this._filmDetailsComponent.setDeleteButton(commentId);
+    this._filmDetailsComponent.disableCommentButton(commentId);
+
+    this._onCommentChange(commentId, null);
   }
 
-  _onCommentsChange(oldCommentId, newComment) {
-    this._isCommentsChanged = true;
+  _onCommentChange(oldCommentId, newComment) {
+    if (newComment === null) {
+      this._api.removeComment(oldCommentId)
+        .then(() => {
+          this._comments.removeComment(oldCommentId);
+          const newFilm = FilmModel.clone(this._film);
 
-    if (oldCommentId === null) {
-      this._filmDetailsComponent.enable();
-      this._comments.addComment(newComment);
+          this._onDataChange(this, this._film, newFilm);
+        })
+        .catch(() => {
+          const commentsElements = this._filmDetailsComponent.getElement().querySelectorAll(`.film-details__comment`);
+          const commentElement = Array.from(commentsElements).find((element) => element.dataset.id === oldCommentId);
+
+          this._filmDetailsComponent.enableCommentButton(oldCommentId);
+          this._filmDetailsComponent.shakeComment(commentElement);
+
+          setTimeout(() => {}, SHAKE_ANIMATION_TIMEOUT);
+        });
+    } else if (oldCommentId === null) {
+      this._api.addComment(this._film.id, newComment)
+        .then((comment) => {
+          this._filmDetailsComponent.enable();
+          this._comments.addComment(comment);
+          const newFilm = FilmModel.clone(this._film);
+          this._onDataChange(this, this._film, newFilm);
+        })
+        .catch(() => {
+          this._filmDetailsComponent.enable();
+          this._filmDetailsComponent.shake();
+        });
     }
   }
 }

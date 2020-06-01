@@ -1,32 +1,23 @@
-import {AbstractComponent} from "./abstract-component";
-
-const SortType = {
-  DEFAULT: `default`,
-  DATE: `date`,
-  RATING: `rating`,
-};
+import AbstractComponent from "./abstract-component";
+import {SORT_TYPES} from "../constants";
 
 const createSortTemplate = () => {
   return `<ul class="sort">
-            <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-            <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
-            <li><a href="#" class="sort__button" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
+            <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SORT_TYPES.DEFAULT}">Sort by default</a></li>
+            <li><a href="#" class="sort__button" data-sort-type="${SORT_TYPES.DATE}">Sort by date</a></li>
+            <li><a href="#" class="sort__button" data-sort-type="${SORT_TYPES.RATING}">Sort by rating</a></li>
   </ul>`;
 };
 
-class SortComponent extends AbstractComponent {
+export default class SortComponent extends AbstractComponent {
   constructor() {
     super();
 
-    this._currentSortType = SortType.DEFAULT;
+    this._currentSortType = SORT_TYPES.DEFAULT;
   }
 
   getTemplate() {
     return createSortTemplate();
-  }
-
-  getSortType() {
-    return this._currentSortType;
   }
 
   setSortTypeChangeHandler(handler) {
@@ -60,14 +51,7 @@ class SortComponent extends AbstractComponent {
   clearSortMenu() {
     const activeButton = this.getElement().querySelector(`.sort__button--active`);
     activeButton.classList.remove(`sort__button--active`);
-    // накидываем active на первый элемент
     this.getElement().querySelector(`.sort__button`).classList.add(`sort__button--active`);
-    // сбрасываем сортировку
-    this._currentSortType = SortType.DEFAULT;
+    this._currentSortType = SORT_TYPES.DEFAULT;
   }
 }
-
-export {
-  SortType,
-  SortComponent,
-};

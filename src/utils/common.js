@@ -1,22 +1,39 @@
-const getRandomIntegerNumber = (min, max) => {
+import {STATUS_CODES, SHAKE_ANIMATION_TIMEOUT, RANKS} from "../constants";
+
+export const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
 
-const getRandomArrayItem = (array) => {
+export const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length);
 
   return array[randomIndex];
 };
 
-const generateRandomDate = () => {
-  const start = new Date(`2020/01/01`).getTime();
-  const end = new Date(`2020/05/30`).getTime();
+export const checkStatus = (response) => {
+  if (response.status >= STATUS_CODES.SUCCESS && response.status < STATUS_CODES.REDIRECTION) {
+    return response;
+  }
 
-  return new Date((Math.random() * (end - start)) + start);
+  return new Error(`${response.status}: ${response.statusText}`);
 };
 
-export {
-  getRandomIntegerNumber,
-  getRandomArrayItem,
-  generateRandomDate,
+export const getRank = (count) => {
+  let rank = ``;
+
+  Object.keys(RANKS).forEach((key) => {
+    if (count > RANKS[key].value) {
+      rank = RANKS[key].name;
+    }
+  });
+
+  return rank;
+};
+
+export const shake = (element) => {
+  element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}ms`;
+
+  setTimeout(() => {
+    element.style.animation = ``;
+  }, SHAKE_ANIMATION_TIMEOUT);
 };
