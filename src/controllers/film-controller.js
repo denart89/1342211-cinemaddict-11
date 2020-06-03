@@ -2,7 +2,7 @@ import FilmComponent from "../components/film-component";
 import FilmDetailsComponent from "../components/film-details-component";
 import {render, renderPosition, replace, remove} from "../utils/render";
 import CommentsModel from "../models/comments-model";
-import {BUTTONS_CODE, ERROR_MESSAGES, SHAKE_ANIMATION_TIMEOUT} from "../constants";
+import {ButtonCode, ErrorMessage, SHAKE_ANIMATION_TIMEOUT} from "../constants";
 import FilmModel from "../models/film-model";
 
 export default class FilmController {
@@ -18,6 +18,7 @@ export default class FilmController {
     this._body = document.querySelector(`body`);
     this._onFilmClick = this._onFilmClick.bind(this);
     this._onCommentClick = this._onCommentClick.bind(this);
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
   render(film) {
@@ -44,7 +45,7 @@ export default class FilmController {
 
   _closeFilmDetails() {
     if (this._filmDetailsComponent) {
-      this._filmDetailsComponent.getElement().remove();
+      remove(this._filmDetailsComponent);
     }
   }
 
@@ -86,14 +87,17 @@ export default class FilmController {
       this._onCommentChange(null, newComment);
     });
 
-    document.addEventListener(`keydown`, (evt) => {
-      if (evt.keyCode === BUTTONS_CODE.ESC) {
-        remove(this._filmDetailsComponent);
-      }
-    });
+    document.addEventListener(`keydown`, this._onEscKeyDown);
   }
 
-  _setDefaultView() {
+  _onEscKeyDown(evt) {
+    if (evt.keyCode === ButtonCode.ESC) {
+      remove(this._filmDetailsComponent);
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
+    }
+  }
+
+  setDefaultView() {
     this._closeFilmDetails();
   }
 
@@ -107,12 +111,13 @@ export default class FilmController {
       render(this._body, this._filmDetailsComponent, renderPosition.APPEND);
     })
       .catch(() => {
-        return Promise.reject(new Error(ERROR_MESSAGES.CONNECTION));
+        return Promise.reject(new Error(ErrorMessage.CONNECTION));
       });
   }
 
   _onCommentClick(commentId) {
     this._filmDetailsComponent.disableCommentButton(commentId);
+    this._filmDetailsComponent.setDeletindButton(commentId);
 
     this._onCommentChange(commentId, null);
   }
@@ -133,7 +138,9 @@ export default class FilmController {
           this._filmDetailsComponent.enableCommentButton(oldCommentId);
           this._filmDetailsComponent.shakeComment(commentElement);
 
-          setTimeout(() => {}, SHAKE_ANIMATION_TIMEOUT);
+          setTimeout(() => {
+            this._filmDetailsComponent.setDeletindButton(null);
+          }, SHAKE_ANIMATION_TIMEOUT);
         });
     } else if (oldCommentId === null) {
       this._api.addComment(this._film.id, newComment)

@@ -1,14 +1,18 @@
 import CommentComponent from "./comment-component";
 import AbstractSmartComponent from "./abstract-smart-component";
 import LocalComment from "../models/local-comment-model";
-import {SHAKE_ANIMATION_TIMEOUT, EMOTIONS, BUTTONS_CODE} from "../constants";
+import {SHAKE_ANIMATION_TIMEOUT, emotions, ButtonCode} from "../constants";
 import moment from "moment";
 import {getFormattedRuntime} from "./film-component";
 import {shake} from "../utils/common";
 
-const createCommentsListTemplate = (comments) => {
+const createCommentsListTemplate = (comments, deletingButtonId) => {
   return comments
-    .map((comment) => new CommentComponent(comment).getTemplate())
+    .map((comment) => {
+      const isDeletingButtonId = deletingButtonId === comment.id;
+
+      return new CommentComponent(comment, isDeletingButtonId).getTemplate();
+    })
     .join(``);
 };
 
@@ -22,7 +26,7 @@ const createEmojiItem = (emotion, isChecked) => {
 };
 
 const createEmojiTemplate = (emotion) => {
-  return EMOTIONS.map((it) => createEmojiItem(it, it === emotion)).join(``);
+  return emotions.map((emotionItem) => createEmojiItem(emotionItem, emotionItem === emotion)).join(``);
 };
 
 const createEmojiImage = (emotion) => {
@@ -33,10 +37,10 @@ const createEmojiImage = (emotion) => {
 const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
   const {title, description, poster, rating, releaseDate, runtime, genres, originalTitle, director, writers, actors, country, age} = film;
   const commentsCount = comments.length;
-  const {emotion, message} = options;
+  const {emotion, message, deletingButtonId} = options;
   const formattedReleaseDate = moment(releaseDate).format(`YYYY`);
   const formattedRuntime = getFormattedRuntime(runtime);
-  const getGenres = genres.map((it) => `<span class="film-details__genre">${it}</span>`).join(``);
+  const getGenres = genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(``);
 
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -117,7 +121,7 @@ const createFullFilmDetailsTemplate = (film, comments, options = {}) => {
               <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
       
               <ul class="film-details__comments-list">
-                  ${createCommentsListTemplate(comments)}
+                  ${createCommentsListTemplate(comments, deletingButtonId)}
               </ul>
   
               <div class="film-details__new-comment">
@@ -147,6 +151,7 @@ export default class FilmDetailsComponent extends AbstractSmartComponent {
     this._emotion = null;
     this._comments = comments;
     this._message = null;
+    this._deletingButtonId = null;
     this._setRemoveCommentClickHandler = null;
     this._setNewCommentSubmitHandler = null;
     this.setEmojiClickHandler();
@@ -158,6 +163,7 @@ export default class FilmDetailsComponent extends AbstractSmartComponent {
     return createFullFilmDetailsTemplate(this._film, this._comments.getComments(), {
       emotion: this._emotion,
       message: this._message,
+      deletingButtonId: this._deletingButtonId,
     });
   }
 
@@ -210,7 +216,7 @@ export default class FilmDetailsComponent extends AbstractSmartComponent {
     });
 
     commentInput.addEventListener(`keydown`, (evt) => {
-      if (evt.keyCode === BUTTONS_CODE.ENTER && (evt.ctrlKey || evt.metaKey)) {
+      if (evt.keyCode === ButtonCode.ENTER && (evt.ctrlKey || evt.metaKey)) {
         if (this._emotion && this._message) {
           const newCommentData = this._createNewComment(this._emotion, this._message);
 
@@ -319,5 +325,11 @@ export default class FilmDetailsComponent extends AbstractSmartComponent {
 
   shakeComment(comment) {
     shake(comment);
+  }
+
+  setDeletindButton(id) {
+    this._deletingButtonId = id;
+
+    this.rerender();
   }
 }

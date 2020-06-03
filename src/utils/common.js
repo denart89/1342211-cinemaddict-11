@@ -1,4 +1,4 @@
-import {STATUS_CODES, SHAKE_ANIMATION_TIMEOUT, RANKS} from "../constants";
+import {StatusCode, SHAKE_ANIMATION_TIMEOUT, Rank} from "../constants";
 
 export const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
@@ -11,7 +11,7 @@ export const getRandomArrayItem = (array) => {
 };
 
 export const checkStatus = (response) => {
-  if (response.status >= STATUS_CODES.SUCCESS && response.status < STATUS_CODES.REDIRECTION) {
+  if (response.status >= StatusCode.SUCCESS && response.status < StatusCode.REDIRECTION) {
     return response;
   }
 
@@ -21,9 +21,9 @@ export const checkStatus = (response) => {
 export const getRank = (count) => {
   let rank = ``;
 
-  Object.keys(RANKS).forEach((key) => {
-    if (count > RANKS[key].value) {
-      rank = RANKS[key].name;
+  Object.keys(Rank).forEach((key) => {
+    if (count > Rank[key].value) {
+      rank = Rank[key].name;
     }
   });
 

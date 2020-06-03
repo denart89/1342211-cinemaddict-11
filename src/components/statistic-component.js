@@ -1,4 +1,4 @@
-import {STATISTIC_FILTERS, GENRES} from "../constants";
+import {StatisticFilter, FilterType} from "../constants";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import AbstractSmartComponent from "./abstract-smart-component";
@@ -14,7 +14,9 @@ const createStatisticFilterTemplate = (filter, isChecked = false) => {
 };
 
 const createStatisticsTemplate = (films, currentFilter) => {
-  const duration = films.reduce((filmsDuration, film) => {
+  const watchedFilmsByPeriod = getWatchedFilmsByPeriod(films, currentFilter);
+
+  const duration = watchedFilmsByPeriod.reduce((filmsDuration, film) => {
     filmsDuration += film.runtime;
     return filmsDuration;
   }, 0);
@@ -23,14 +25,15 @@ const createStatisticsTemplate = (films, currentFilter) => {
   const durationMinutes = duration % 60;
 
   let timeFiltersMarkup = ``;
-  for (const filter in STATISTIC_FILTERS) {
+  for (const filter in StatisticFilter) {
     if (filter) {
-      timeFiltersMarkup = timeFiltersMarkup.concat(createStatisticFilterTemplate(STATISTIC_FILTERS[filter], currentFilter === STATISTIC_FILTERS[filter].label));
+      timeFiltersMarkup = timeFiltersMarkup.concat(createStatisticFilterTemplate(StatisticFilter[filter], currentFilter === StatisticFilter[filter].label));
     }
   }
 
-  const topGenre = films.length > 0 ? getTopGenre(films) : ``;
-  const rank = getRank(films.length);
+  const topGenre = watchedFilmsByPeriod.length > 0 ? getTopGenre(watchedFilmsByPeriod) : ``;
+  const watchedFilmsCount = getFilmsByFilter(films, FilterType.HISTORY).length;
+  const rank = getRank(watchedFilmsCount);
 
   return `<section class="statistic">
     <p class="statistic__rank">
@@ -47,7 +50,7 @@ const createStatisticsTemplate = (films, currentFilter) => {
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
-        <p class="statistic__item-text">${films.length} <span class="statistic__item-description">movies</span></p>
+        <p class="statistic__item-text">${watchedFilmsByPeriod.length} <span class="statistic__item-description">movies</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
@@ -66,14 +69,37 @@ const createStatisticsTemplate = (films, currentFilter) => {
   </section>`;
 };
 
+const getWatchedFilmsByPeriod = (films, period) => {
+  const watchedFilms = getFilmsByFilter(films, FilterType.HISTORY);
+
+  if (period === StatisticFilter.ALLTIME.label) {
+    return watchedFilms;
+  }
+
+  const startOfPeriod = moment().startOf(period);
+
+  return watchedFilms.filter((film) => moment(film.watchingDate).isAfter(startOfPeriod));
+};
+
 const getCountedGenres = (films) => {
-  const values = GENRES.map((genre) =>
+  const filmGenres = [];
+
+  films.forEach((film) => {
+    film.genres.forEach((genre) => {
+      filmGenres.push(genre);
+    });
+  });
+
+  const filteredGenres = filmGenres.filter((genre, i) => filmGenres.indexOf(genre) === i);
+
+  const values = filteredGenres.map((genre) =>
     films.filter((film) =>
       film.genres.includes(genre))
       .length);
 
   const genresCount = [];
-  GENRES.forEach((genre, i) => genresCount.push({name: genre, count: values[i]}));
+
+  filteredGenres.forEach((genre, i) => genresCount.push({name: genre, count: values[i]}));
 
   return genresCount.sort((a, b) => b.count - a.count);
 };
@@ -81,7 +107,7 @@ const getCountedGenres = (films) => {
 const getTopGenre = (films) => getCountedGenres(films)[0].name;
 
 const renderChart = (films, ctx) => {
-  ctx.height = 50 * GENRES.length;
+  ctx.height = 50 * getCountedGenres.length;
 
   return new Chart(ctx, {
     plugins: [ChartDataLabels],
@@ -141,39 +167,26 @@ const renderChart = (films, ctx) => {
   });
 };
 
-const getWatchedFilmsByPeriod = (films, period) => {
-  const watchedFilms = getFilmsByFilter(films, `History`);
-
-  if (period === STATISTIC_FILTERS.ALLTIME.label) {
-    return watchedFilms;
-  }
-
-  const startOfPeriod = moment().startOf(period);
-
-  return watchedFilms.filter((film) => moment(film.watchingDate).isAfter(startOfPeriod));
-};
-
 export default class StatisticsComponent extends AbstractSmartComponent {
   constructor(films) {
     super();
 
     this._films = films;
     this._renderChart();
-    this._currentTimeFilter = STATISTIC_FILTERS.ALLTIME.label;
+    this._currentTimeFilter = StatisticFilter.ALLTIME.label;
 
     this._setTimeFilterHandlers();
   }
 
   getTemplate() {
-    return createStatisticsTemplate(getWatchedFilmsByPeriod(this._films.getFilms(), this._currentTimeFilter), this._currentTimeFilter);
+    return createStatisticsTemplate(this._films.getFilms(), this._currentTimeFilter);
   }
-
   _renderChart() {
     const statisticChart = this.getElement().querySelector(`.statistic__chart`);
     const ctx = statisticChart.getContext(`2d`);
     const watchedFilmsByPeriod = getWatchedFilmsByPeriod(this._films.getFilms(), this._currentTimeFilter);
 
-    if (watchedFilmsByPeriod.length > 0) {
+    if (watchedFilmsByPeriod.length) {
       renderChart(watchedFilmsByPeriod, ctx);
     }
   }

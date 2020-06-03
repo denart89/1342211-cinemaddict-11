@@ -14,6 +14,14 @@ export default class FooterStatisticsComponent extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createFooterStatisticsTemplate(this._films);
+    return createFooterStatisticsTemplate(this._films.getFilms());
+  }
+
+  rerender() {
+    super.rerender();
+  }
+
+  recoveryListeners() {
+
   }
 }

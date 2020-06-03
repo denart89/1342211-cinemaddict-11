@@ -1,11 +1,11 @@
 import AbstractComponent from "./abstract-component";
-import {SORT_TYPES} from "../constants";
+import {SortType} from "../constants";
 
 const createSortTemplate = () => {
   return `<ul class="sort">
-            <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SORT_TYPES.DEFAULT}">Sort by default</a></li>
-            <li><a href="#" class="sort__button" data-sort-type="${SORT_TYPES.DATE}">Sort by date</a></li>
-            <li><a href="#" class="sort__button" data-sort-type="${SORT_TYPES.RATING}">Sort by rating</a></li>
+            <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+            <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
+            <li><a href="#" class="sort__button" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
   </ul>`;
 };
 
@@ -13,7 +13,7 @@ export default class SortComponent extends AbstractComponent {
   constructor() {
     super();
 
-    this._currentSortType = SORT_TYPES.DEFAULT;
+    this._currentSortType = SortType.DEFAULT;
   }
 
   getTemplate() {
@@ -52,6 +52,6 @@ export default class SortComponent extends AbstractComponent {
     const activeButton = this.getElement().querySelector(`.sort__button--active`);
     activeButton.classList.remove(`sort__button--active`);
     this.getElement().querySelector(`.sort__button`).classList.add(`sort__button--active`);
-    this._currentSortType = SORT_TYPES.DEFAULT;
+    this._currentSortType = SortType.DEFAULT;
   }
 }

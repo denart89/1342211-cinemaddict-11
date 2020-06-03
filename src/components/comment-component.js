@@ -7,7 +7,7 @@ const createCommentItem = (comment, isDeletingButton) => {
   const {id, message: currentMessage, emotion, date, authorName} = comment;
   const message = encode(currentMessage);
   const formattedDate = getFormattedDate(date);
-  const buttonText = isDeletingButton ? `Deleting…` : `Delete`;
+  const buttonText = isDeletingButton ? `Deleting ...` : `Delete`;
 
   return `<li class="film-details__comment" data-id="${id}">
             <span class="film-details__comment-emoji">
@@ -42,13 +42,14 @@ const getFormattedDate = (date) => {
 };
 
 export default class CommentComponent extends AbstractComponent {
-  constructor(comment) {
+  constructor(comment, isDeletingButton) {
     super();
 
     this._comment = comment;
+    this._isDeletingButton = isDeletingButton;
   }
 
   getTemplate() {
-    return createCommentItem(this._comment);
+    return createCommentItem(this._comment, this._isDeletingButton);
   }
 }

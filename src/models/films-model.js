@@ -1,11 +1,11 @@
 import {getFilmsByFilter} from "../utils/filter.js";
-import {FILTER_TYPES} from "../constants.js";
+import {FilterType} from "../constants.js";
 
 export default class FilmsModel {
   constructor() {
     this._films = [];
 
-    this._activeFilterType = FILTER_TYPES.ALL;
+    this._activeFilterType = FilterType.ALL;
 
     this.filmsChangeHandlers = [];
     this._filterChangeHandlers = [];
@@ -24,7 +24,7 @@ export default class FilmsModel {
   }
 
   updateFilm(id, film) {
-    const index = this._films.findIndex((it) => it.id === id);
+    const index = this._films.findIndex((filmIndex) => filmIndex.id === id);
 
     if (index === -1) {
       return false;

@@ -1,10 +1,10 @@
-import AbstractComponent from "./abstract-component";
-import {FILTER_TYPES} from "../constants";
+import {FilterType} from "../constants";
 import {getFilmsByFilter} from "../utils/filter";
 import {getRank} from "../utils/common";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const createProfileTemplate = (films) => {
-  const watchedFilmsCount = getFilmsByFilter(films, FILTER_TYPES.HISTORY.id).length;
+  const watchedFilmsCount = getFilmsByFilter(films, FilterType.HISTORY).length;
   const rank = getRank(watchedFilmsCount);
 
   return `<section class="header__profile profile">
@@ -13,7 +13,7 @@ const createProfileTemplate = (films) => {
   </section>`;
 };
 
-class ProfileComponent extends AbstractComponent {
+export default class ProfileComponent extends AbstractSmartComponent {
   constructor(films) {
     super();
 
@@ -21,8 +21,14 @@ class ProfileComponent extends AbstractComponent {
   }
 
   getTemplate() {
-    return createProfileTemplate(this._films);
+    return createProfileTemplate(this._films.getFilms());
+  }
+
+  rerender() {
+    super.rerender();
+  }
+
+  recoveryListeners() {
+
   }
 }
-
-export {ProfileComponent};

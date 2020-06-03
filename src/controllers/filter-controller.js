@@ -1,17 +1,19 @@
 import FilterComponent from "../components/filter-component.js";
-import {FILTER_TYPES} from "../constants.js";
+import {FilterType} from "../constants.js";
 import {render, renderPosition} from "../utils/render.js";
 import {getFilmsByFilter} from "../utils/filter.js";
+import {remove} from "../utils/render";
 
 export default class FilterController {
   constructor(container, filmsModel) {
     this._container = container;
     this._filmsModel = filmsModel;
-    this._activeFilterType = FILTER_TYPES.ALL;
+    this._activeFilterType = FilterType.ALL;
     this._filterComponent = null;
-    this.onFilterChange = this.onFilterChange.bind(this);
-    this.onDataChange = this.onDataChange.bind(this);
-    this._filmsModel.setFilmsChangeHandlers(this.onDataChange);
+
+    this._onFilterChange = this._onFilterChange.bind(this);
+    this._onDataChange = this._onDataChange.bind(this);
+    this._filmsModel.setFilmsChangeHandlers(this._onDataChange);
   }
 
   render() {
@@ -21,30 +23,37 @@ export default class FilterController {
 
     render(this._container, this._filterComponent, renderPosition.PREPEND);
 
-    this._filterComponent.setFilterChangeHandler(this.onFilterChange);
+    this._filterComponent.setFilterChangeHandler(this._onFilterChange);
   }
 
   _getFilterData() {
     const allFilms = this._filmsModel.getFilms();
-    const filters = Object.values(FILTER_TYPES).map((filterType) => {
+    const filters = Object.values(FilterType).map((filterType) => {
+      const countFilms = allFilms.length ? getFilmsByFilter(allFilms, filterType).length : 0;
+
       return {
-        id: filterType.id,
-        name: filterType.name,
-        count: getFilmsByFilter(allFilms, filterType.id).length,
-        isActive: filterType.id === this._activeFilterType.id,
+        name: filterType,
+        count: countFilms,
+        isActive: filterType === this._activeFilterType,
       };
     });
 
     return filters;
   }
 
-  onFilterChange(filterType) {
-    this._filmsModel.setFilter(filterType);
+  _onFilterChange(filterType) {
     this._activeFilterType = filterType;
+    this._filmsModel.setFilter(filterType);
   }
 
-  onDataChange() {
+  _onDataChange() {
     const filterData = this._getFilterData();
     this._filterComponent.rerender(filterData);
+  }
+
+  _rerender() {
+    this._onFilterChange(``);
+    remove(this._filterComponent);
+    this.render();
   }
 }
