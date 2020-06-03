@@ -78,7 +78,10 @@ export default class FilmController {
     this._filmDetailsComponent.setWatchListButtonClickHandler(watchListButtonClickHandler);
     this._filmDetailsComponent.setWatchedButtonClickHandler(watchedButtonClickHandler);
     this._filmDetailsComponent.setFavoriteButtonClickHandler(favoriteButtonClickHandler);
-    this._filmDetailsComponent.setCloseButtonClickHandler(() => remove(this._filmDetailsComponent));
+    this._filmDetailsComponent.setCloseButtonClickHandler(() => {
+      remove(this._filmDetailsComponent);
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
+    });
 
     this._filmDetailsComponent.setRemoveCommentClickHandler(this._onCommentClick);
     this._filmDetailsComponent.setNewCommentSubmitHandler((newComment) => {

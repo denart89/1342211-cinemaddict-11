@@ -5,22 +5,26 @@ import ProfileComponent from './components/profile-component';
 import FilterController from './controllers/filter-controller';
 import PageController from './controllers/page-controller';
 import FooterStatisticsComponent from './components/footer-statistics-component';
-import {render, renderPosition} from './utils/render';
+import {remove, render, renderPosition} from './utils/render';
 import FilmsContainerComponent from "./components/films-container-component";
 import FilmsModel from "./models/films-model";
 import MenuComponent from "./components/menu-component";
 import StatisticsComponent from "./components/statistic-component";
+import FilmsLoadingComponent from "./components/films-loading-component";
 
 const filmsModel = new FilmsModel();
 const api = new API(AUTHORIZATION, END_POINT);
 const apiProvider = new Provider(api, filmsModel);
 const header = document.querySelector(`.header`);
 const footerStatistics = document.querySelector(`.footer .footer__statistics`);
+const main = document.querySelector(`.main`);
 const menuComponent = new MenuComponent();
 const profileComponent = new ProfileComponent(filmsModel);
 const footerStatisticsComponent = new FooterStatisticsComponent(filmsModel);
+const filmsLoadingComponent = new FilmsLoadingComponent();
 
 render(header, profileComponent, renderPosition.APPEND);
+render(main, filmsLoadingComponent, renderPosition.APPEND);
 render(footerStatistics, footerStatisticsComponent, renderPosition.APPEND);
 
 const filterController = new FilterController(menuComponent.getElement(), filmsModel);
@@ -51,11 +55,22 @@ apiProvider.getFilms()
     profileComponent.rerender();
     footerStatisticsComponent.rerender();
     render(header, menuComponent, renderPosition.AFTER);
+    filmsLoadingComponent.hide();
+    remove(filmsLoadingComponent);
     pageController.render();
     filterController.render();
     render(footerStatistics.parentNode, statisticsComponent, renderPosition.BEFORE);
     statisticsComponent.hide();
   })
   .catch((err) => {
+    profileComponent.rerender();
+    footerStatisticsComponent.rerender();
+    render(header, menuComponent, renderPosition.AFTER);
+    filmsLoadingComponent.hide();
+    remove(filmsLoadingComponent);
+    pageController.render();
+    filterController.render();
+    render(footerStatistics.parentNode, statisticsComponent, renderPosition.BEFORE);
+    statisticsComponent.hide();
     throw new Error(err);
   });

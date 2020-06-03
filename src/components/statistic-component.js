@@ -31,7 +31,7 @@ const createStatisticsTemplate = (films, currentFilter) => {
     }
   }
 
-  const topGenre = watchedFilmsByPeriod.length > 0 ? getTopGenre(watchedFilmsByPeriod) : ``;
+  const topGenre = watchedFilmsByPeriod.length ? getTopGenre(watchedFilmsByPeriod) : ``;
   const watchedFilmsCount = getFilmsByFilter(films, FilterType.HISTORY).length;
   const rank = getRank(watchedFilmsCount);
 
@@ -107,7 +107,7 @@ const getCountedGenres = (films) => {
 const getTopGenre = (films) => getCountedGenres(films)[0].name;
 
 const renderChart = (films, ctx) => {
-  ctx.height = 50 * getCountedGenres.length;
+  ctx.height = 50 * getCountedGenres(films).length;
 
   return new Chart(ctx, {
     plugins: [ChartDataLabels],

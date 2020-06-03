@@ -24,7 +24,7 @@ export default class FilmsModel {
   }
 
   updateFilm(id, film) {
-    const index = this._films.findIndex((filmIndex) => filmIndex.id === id);
+    const index = this._films.findIndex((currentFilm) => currentFilm.id === id);
 
     if (index === -1) {
       return false;

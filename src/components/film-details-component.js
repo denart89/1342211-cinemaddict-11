@@ -328,8 +328,11 @@ export default class FilmDetailsComponent extends AbstractSmartComponent {
   }
 
   setDeletindButton(id) {
-    this._deletingButtonId = id;
+    if (this._deletingButtonId === null) {
+      return;
+    }
 
+    this._deletingButtonId = id;
     this.rerender();
   }
 }

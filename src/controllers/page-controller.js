@@ -6,7 +6,6 @@ import {remove, render, renderPosition} from "../utils/render";
 import FilmController from "./film-controller";
 import {DISPLAY_FILMS_COUNT, SortType} from "../constants";
 import moment from "moment";
-import FilmsLoadingComponent from "../components/films-loading-component";
 
 export default class PageController {
   constructor(container, filmsModel, api) {
@@ -19,7 +18,6 @@ export default class PageController {
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
     this._filmsListComponent = new FilmsListComponent();
     this._noFilmsComponent = new NoFilmsComponent();
-    this._filmsLoadingComponent = new FilmsLoadingComponent();
     this._sortComponent = new SortComponent();
     this._filmsListContainerComponent = this._filmsListComponent.getElement().querySelector(`.films-list__container`);
     this._main = document.querySelector(`.main`);
@@ -32,7 +30,6 @@ export default class PageController {
   }
 
   render() {
-    this._setLoadingStatusOn();
     this._films = this._filmsModel.getFilmsByFilter();
     this._renderSort();
 
@@ -40,20 +37,10 @@ export default class PageController {
     this._renderFilmsList();
 
     if (!this._films.length) {
-      this._setLoadingStatusOff();
       render(this._filmsListContainerComponent, this._noFilmsComponent, renderPosition.APPEND);
     } else {
-      this._setLoadingStatusOff();
       this._renderFilms(this._filmsListContainerComponent, this._films);
     }
-  }
-
-  _setLoadingStatusOn() {
-    render(this._filmsListContainerComponent, this._filmsLoadingComponent, renderPosition.BEFORE);
-  }
-
-  _setLoadingStatusOff() {
-    remove(this._filmsLoadingComponent);
   }
 
   _renderFilms(filmListElement, films) {
